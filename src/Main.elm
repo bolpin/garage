@@ -4,6 +4,7 @@ import Html exposing (Html, div)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, second)
+import Html.Events exposing (onClick)
 
 
 main =
@@ -34,7 +35,8 @@ initParkingSpots =
     [ { number = 1
       , x = 10
       , y = 10
-      , orientation = 0
+      , orientation = 15
+      , state = Booked
       }
     ]
 
@@ -51,7 +53,13 @@ type alias ParkingSpot =
     , x : Int
     , y : Int
     , orientation : Int -- degrees
+    , state : State
     }
+
+
+type State
+    = Available
+    | Booked
 
 
 
@@ -59,14 +67,18 @@ type alias ParkingSpot =
 
 
 type Msg
-    = Increment
+    = Left
+    | Right
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Left ->
+            ( { model | width = model.width + 10 }, Cmd.none )
+
         _ ->
-            ( model, Cmd.none )
+            ( { model | width = model.width - 10 }, Cmd.none )
 
 
 
@@ -77,19 +89,27 @@ view : Model -> Html Msg
 view model =
     div []
         [ svg
-            [ width "300", height "300", viewBox "0 0 320 320" ]
-            [ garageRect, spotRect ]
+            [ width "600", height "600", viewBox "0 0 600 600" ]
+            [ drawGarage
+            , drawText
+            , drawSpot
+            ]
         ]
 
 
-garageRect : Svg msg
-garageRect =
-    rect [ x "10", y "10", width (toString 100), height (toString 100), rx "5", ry "5", fill "#0B79CE" ] []
+drawText : Svg Msg
+drawText =
+    text_ [ x "15", y "15", transform "rotate(30 20, 40)", fill "0x808080" ] [ text "Parking!" ]
 
 
-spotRect : Svg msg
-spotRect =
-    rect [ x "100", y "100", width "100", height "100", rx "5", ry "5", fill "#790B0E" ] []
+drawGarage : Svg Msg
+drawGarage =
+    rect [ x "10", y "10", width (toString 500), height (toString 500), rx "5", ry "5", fill "#0B79CE", onClick Left ] []
+
+
+drawSpot : Svg Msg
+drawSpot =
+    rect [ x "100", y "100", width "100", height "100", rx "5", ry "5", fill "#790B0E", onClick Right ] []
 
 
 

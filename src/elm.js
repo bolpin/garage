@@ -8207,6 +8207,121 @@ var _elm_lang$html$Html$summary = _elm_lang$html$Html$node('summary');
 var _elm_lang$html$Html$menuitem = _elm_lang$html$Html$node('menuitem');
 var _elm_lang$html$Html$menu = _elm_lang$html$Html$node('menu');
 
+var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int);
+var _elm_lang$html$Html_Events$targetChecked = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'checked',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$bool);
+var _elm_lang$html$Html_Events$targetValue = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'value',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
+var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
+var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$html$Html_Events$onFocus = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onBlur = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
+	_elm_lang$html$Html_Events$defaultOptions,
+	{preventDefault: true});
+var _elm_lang$html$Html_Events$onSubmit = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'submit',
+		_elm_lang$html$Html_Events$onSubmitOptions,
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onCheck = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+};
+var _elm_lang$html$Html_Events$onInput = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+};
+var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseout',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseover',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseleave',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseenter',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseup',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mousedown',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'dblclick',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'click',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$Options = F2(
+	function (a, b) {
+		return {stopPropagation: a, preventDefault: b};
+	});
+
 var _elm_lang$svg$Svg$map = _elm_lang$virtual_dom$VirtualDom$map;
 var _elm_lang$svg$Svg$text = _elm_lang$virtual_dom$VirtualDom$text;
 var _elm_lang$svg$Svg$svgNamespace = A2(
@@ -8551,7 +8666,73 @@ var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$spotRect = A2(
+var _user$project$Main$drawText = A2(
+	_elm_lang$svg$Svg$text_,
+	{
+		ctor: '::',
+		_0: _elm_lang$svg$Svg_Attributes$x('15'),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$y('15'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$transform('rotate(30 20, 40)'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$fill('0x808080'),
+					_1: {ctor: '[]'}
+				}
+			}
+		}
+	},
+	{
+		ctor: '::',
+		_0: _elm_lang$svg$Svg$text('Parking!'),
+		_1: {ctor: '[]'}
+	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		if (_p0.ctor === 'Left') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{width: model.width + 10}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{width: model.width - 10}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		}
+	});
+var _user$project$Main$Garage = F3(
+	function (a, b, c) {
+		return {height: a, width: b, parkingSpots: c};
+	});
+var _user$project$Main$ParkingSpot = F5(
+	function (a, b, c, d, e) {
+		return {number: a, x: b, y: c, orientation: d, state: e};
+	});
+var _user$project$Main$NotAvailable = {ctor: 'NotAvailable'};
+var _user$project$Main$initParkingSpots = {
+	ctor: '::',
+	_0: {number: 1, x: 10, y: 10, orientation: 0, state: _user$project$Main$NotAvailable},
+	_1: {ctor: '[]'}
+};
+var _user$project$Main$initGarage = {
+	ctor: '_Tuple2',
+	_0: {height: 200, width: 300, parkingSpots: _user$project$Main$initParkingSpots},
+	_1: _elm_lang$core$Platform_Cmd$none
+};
+var _user$project$Main$Available = {ctor: 'Available'};
+var _user$project$Main$Right = {ctor: 'Right'};
+var _user$project$Main$drawSpot = A2(
 	_elm_lang$svg$Svg$rect,
 	{
 		ctor: '::',
@@ -8574,7 +8755,11 @@ var _user$project$Main$spotRect = A2(
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$svg$Svg_Attributes$fill('#790B0E'),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Right),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -8583,7 +8768,8 @@ var _user$project$Main$spotRect = A2(
 		}
 	},
 	{ctor: '[]'});
-var _user$project$Main$garageRect = A2(
+var _user$project$Main$Left = {ctor: 'Left'};
+var _user$project$Main$drawGarage = A2(
 	_elm_lang$svg$Svg$rect,
 	{
 		ctor: '::',
@@ -8593,10 +8779,12 @@ var _user$project$Main$garageRect = A2(
 			_0: _elm_lang$svg$Svg_Attributes$y('10'),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$width('100'),
+				_0: _elm_lang$svg$Svg_Attributes$width(
+					_elm_lang$core$Basics$toString(500)),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$height('100'),
+					_0: _elm_lang$svg$Svg_Attributes$height(
+						_elm_lang$core$Basics$toString(500)),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$svg$Svg_Attributes$rx('5'),
@@ -8606,7 +8794,11 @@ var _user$project$Main$garageRect = A2(
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$svg$Svg_Attributes$fill('#0B79CE'),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Left),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -8625,55 +8817,35 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$svg$Svg$svg,
 				{
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$width('300'),
+					_0: _elm_lang$svg$Svg_Attributes$width('600'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$height('300'),
+						_0: _elm_lang$svg$Svg_Attributes$height('600'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 320 320'),
+							_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 600 600'),
 							_1: {ctor: '[]'}
 						}
 					}
 				},
 				{
 					ctor: '::',
-					_0: _user$project$Main$garageRect,
+					_0: _user$project$Main$drawGarage,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$spotRect,
-						_1: {ctor: '[]'}
+						_0: _user$project$Main$drawText,
+						_1: {
+							ctor: '::',
+							_0: _user$project$Main$drawSpot,
+							_1: {ctor: '[]'}
+						}
 					}
 				}),
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-	});
-var _user$project$Main$initParkingSpots = {
-	ctor: '::',
-	_0: {number: 1, x: 10, y: 10, orientation: 0},
-	_1: {ctor: '[]'}
-};
-var _user$project$Main$initGarage = {
-	ctor: '_Tuple2',
-	_0: {height: 200, width: 300, parkingSpots: _user$project$Main$initParkingSpots},
-	_1: _elm_lang$core$Platform_Cmd$none
-};
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{init: _user$project$Main$initGarage, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();
-var _user$project$Main$Garage = F3(
-	function (a, b, c) {
-		return {height: a, width: b, parkingSpots: c};
-	});
-var _user$project$Main$ParkingSpot = F4(
-	function (a, b, c, d) {
-		return {number: a, x: b, y: c, orientation: d};
-	});
-var _user$project$Main$Increment = {ctor: 'Increment'};
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
