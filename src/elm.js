@@ -8719,10 +8719,10 @@ var _user$project$Main$ParkingSpot = F5(
 	function (a, b, c, d, e) {
 		return {number: a, x: b, y: c, orientation: d, state: e};
 	});
-var _user$project$Main$NotAvailable = {ctor: 'NotAvailable'};
+var _user$project$Main$Booked = {ctor: 'Booked'};
 var _user$project$Main$initParkingSpots = {
 	ctor: '::',
-	_0: {number: 1, x: 10, y: 10, orientation: 0, state: _user$project$Main$NotAvailable},
+	_0: {number: 1, x: 10, y: 10, orientation: 15, state: _user$project$Main$Booked},
 	_1: {ctor: '[]'}
 };
 var _user$project$Main$initGarage = {

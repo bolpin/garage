@@ -1,8 +1,8 @@
 module Main exposing (..)
 
 import Html exposing (Html, div)
-import Svg exposing (..)
-import Svg.Attributes exposing (..)
+import Svg exposing (Svg, svg, text, text_, rect)
+import Svg.Attributes exposing (x, y, rotate, transform, width, height, viewBox, fill, rx, ry)
 import Time exposing (Time, second)
 import Html.Events exposing (onClick)
 
