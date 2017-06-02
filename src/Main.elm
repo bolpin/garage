@@ -83,7 +83,30 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Toggle id ->
-            ( model, Cmd.none )
+            ( toggle id model, Cmd.none )
+
+
+toggle : Int -> List ParkingSpot -> Model
+toggle spotId list =
+    case list of
+        [] ->
+            list
+
+        [ spot ] ->
+            [ toggleSpot spot ]
+
+        spot :: rest ->
+            toggleSpot (spot) :: rest
+
+
+toggleSpot : ParkingSpot -> ParkingSpot
+toggleSpot spot =
+    case spot.state of
+        Booked ->
+            { spot | state = Available }
+
+        Available ->
+            { spot | state = Booked }
 
 
 

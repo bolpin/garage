@@ -8207,6 +8207,356 @@ var _elm_lang$html$Html$summary = _elm_lang$html$Html$node('summary');
 var _elm_lang$html$Html$menuitem = _elm_lang$html$Html$node('menuitem');
 var _elm_lang$html$Html$menu = _elm_lang$html$Html$node('menu');
 
+var _elm_lang$html$Html_Attributes$map = _elm_lang$virtual_dom$VirtualDom$mapProperty;
+var _elm_lang$html$Html_Attributes$attribute = _elm_lang$virtual_dom$VirtualDom$attribute;
+var _elm_lang$html$Html_Attributes$contextmenu = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'contextmenu', value);
+};
+var _elm_lang$html$Html_Attributes$draggable = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'draggable', value);
+};
+var _elm_lang$html$Html_Attributes$itemprop = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'itemprop', value);
+};
+var _elm_lang$html$Html_Attributes$tabindex = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'tabIndex',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$charset = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'charset', value);
+};
+var _elm_lang$html$Html_Attributes$height = function (value) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'height',
+		_elm_lang$core$Basics$toString(value));
+};
+var _elm_lang$html$Html_Attributes$width = function (value) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'width',
+		_elm_lang$core$Basics$toString(value));
+};
+var _elm_lang$html$Html_Attributes$formaction = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'formAction', value);
+};
+var _elm_lang$html$Html_Attributes$list = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'list', value);
+};
+var _elm_lang$html$Html_Attributes$minlength = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'minLength',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$maxlength = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'maxlength',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$size = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'size',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$form = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'form', value);
+};
+var _elm_lang$html$Html_Attributes$cols = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'cols',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$rows = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'rows',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$challenge = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'challenge', value);
+};
+var _elm_lang$html$Html_Attributes$media = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'media', value);
+};
+var _elm_lang$html$Html_Attributes$rel = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'rel', value);
+};
+var _elm_lang$html$Html_Attributes$datetime = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'datetime', value);
+};
+var _elm_lang$html$Html_Attributes$pubdate = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'pubdate', value);
+};
+var _elm_lang$html$Html_Attributes$colspan = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'colspan',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$rowspan = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'rowspan',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$manifest = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'manifest', value);
+};
+var _elm_lang$html$Html_Attributes$property = _elm_lang$virtual_dom$VirtualDom$property;
+var _elm_lang$html$Html_Attributes$stringProperty = F2(
+	function (name, string) {
+		return A2(
+			_elm_lang$html$Html_Attributes$property,
+			name,
+			_elm_lang$core$Json_Encode$string(string));
+	});
+var _elm_lang$html$Html_Attributes$class = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'className', name);
+};
+var _elm_lang$html$Html_Attributes$id = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'id', name);
+};
+var _elm_lang$html$Html_Attributes$title = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'title', name);
+};
+var _elm_lang$html$Html_Attributes$accesskey = function ($char) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'accessKey',
+		_elm_lang$core$String$fromChar($char));
+};
+var _elm_lang$html$Html_Attributes$dir = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'dir', value);
+};
+var _elm_lang$html$Html_Attributes$dropzone = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'dropzone', value);
+};
+var _elm_lang$html$Html_Attributes$lang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'lang', value);
+};
+var _elm_lang$html$Html_Attributes$content = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'content', value);
+};
+var _elm_lang$html$Html_Attributes$httpEquiv = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'httpEquiv', value);
+};
+var _elm_lang$html$Html_Attributes$language = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'language', value);
+};
+var _elm_lang$html$Html_Attributes$src = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'src', value);
+};
+var _elm_lang$html$Html_Attributes$alt = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'alt', value);
+};
+var _elm_lang$html$Html_Attributes$preload = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'preload', value);
+};
+var _elm_lang$html$Html_Attributes$poster = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'poster', value);
+};
+var _elm_lang$html$Html_Attributes$kind = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'kind', value);
+};
+var _elm_lang$html$Html_Attributes$srclang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'srclang', value);
+};
+var _elm_lang$html$Html_Attributes$sandbox = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'sandbox', value);
+};
+var _elm_lang$html$Html_Attributes$srcdoc = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'srcdoc', value);
+};
+var _elm_lang$html$Html_Attributes$type_ = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'type', value);
+};
+var _elm_lang$html$Html_Attributes$value = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'value', value);
+};
+var _elm_lang$html$Html_Attributes$defaultValue = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'defaultValue', value);
+};
+var _elm_lang$html$Html_Attributes$placeholder = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'placeholder', value);
+};
+var _elm_lang$html$Html_Attributes$accept = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'accept', value);
+};
+var _elm_lang$html$Html_Attributes$acceptCharset = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'acceptCharset', value);
+};
+var _elm_lang$html$Html_Attributes$action = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'action', value);
+};
+var _elm_lang$html$Html_Attributes$autocomplete = function (bool) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'autocomplete',
+		bool ? 'on' : 'off');
+};
+var _elm_lang$html$Html_Attributes$enctype = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'enctype', value);
+};
+var _elm_lang$html$Html_Attributes$method = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'method', value);
+};
+var _elm_lang$html$Html_Attributes$name = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'name', value);
+};
+var _elm_lang$html$Html_Attributes$pattern = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'pattern', value);
+};
+var _elm_lang$html$Html_Attributes$for = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'htmlFor', value);
+};
+var _elm_lang$html$Html_Attributes$max = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'max', value);
+};
+var _elm_lang$html$Html_Attributes$min = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'min', value);
+};
+var _elm_lang$html$Html_Attributes$step = function (n) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'step', n);
+};
+var _elm_lang$html$Html_Attributes$wrap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'wrap', value);
+};
+var _elm_lang$html$Html_Attributes$usemap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'useMap', value);
+};
+var _elm_lang$html$Html_Attributes$shape = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'shape', value);
+};
+var _elm_lang$html$Html_Attributes$coords = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'coords', value);
+};
+var _elm_lang$html$Html_Attributes$keytype = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'keytype', value);
+};
+var _elm_lang$html$Html_Attributes$align = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'align', value);
+};
+var _elm_lang$html$Html_Attributes$cite = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'cite', value);
+};
+var _elm_lang$html$Html_Attributes$href = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'href', value);
+};
+var _elm_lang$html$Html_Attributes$target = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'target', value);
+};
+var _elm_lang$html$Html_Attributes$downloadAs = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'download', value);
+};
+var _elm_lang$html$Html_Attributes$hreflang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'hreflang', value);
+};
+var _elm_lang$html$Html_Attributes$ping = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'ping', value);
+};
+var _elm_lang$html$Html_Attributes$start = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'start',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$headers = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'headers', value);
+};
+var _elm_lang$html$Html_Attributes$scope = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'scope', value);
+};
+var _elm_lang$html$Html_Attributes$boolProperty = F2(
+	function (name, bool) {
+		return A2(
+			_elm_lang$html$Html_Attributes$property,
+			name,
+			_elm_lang$core$Json_Encode$bool(bool));
+	});
+var _elm_lang$html$Html_Attributes$hidden = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'hidden', bool);
+};
+var _elm_lang$html$Html_Attributes$contenteditable = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'contentEditable', bool);
+};
+var _elm_lang$html$Html_Attributes$spellcheck = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'spellcheck', bool);
+};
+var _elm_lang$html$Html_Attributes$async = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'async', bool);
+};
+var _elm_lang$html$Html_Attributes$defer = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'defer', bool);
+};
+var _elm_lang$html$Html_Attributes$scoped = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'scoped', bool);
+};
+var _elm_lang$html$Html_Attributes$autoplay = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'autoplay', bool);
+};
+var _elm_lang$html$Html_Attributes$controls = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'controls', bool);
+};
+var _elm_lang$html$Html_Attributes$loop = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'loop', bool);
+};
+var _elm_lang$html$Html_Attributes$default = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'default', bool);
+};
+var _elm_lang$html$Html_Attributes$seamless = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'seamless', bool);
+};
+var _elm_lang$html$Html_Attributes$checked = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'checked', bool);
+};
+var _elm_lang$html$Html_Attributes$selected = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'selected', bool);
+};
+var _elm_lang$html$Html_Attributes$autofocus = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'autofocus', bool);
+};
+var _elm_lang$html$Html_Attributes$disabled = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'disabled', bool);
+};
+var _elm_lang$html$Html_Attributes$multiple = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'multiple', bool);
+};
+var _elm_lang$html$Html_Attributes$novalidate = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'noValidate', bool);
+};
+var _elm_lang$html$Html_Attributes$readonly = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'readOnly', bool);
+};
+var _elm_lang$html$Html_Attributes$required = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'required', bool);
+};
+var _elm_lang$html$Html_Attributes$ismap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'isMap', value);
+};
+var _elm_lang$html$Html_Attributes$download = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'download', bool);
+};
+var _elm_lang$html$Html_Attributes$reversed = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'reversed', bool);
+};
+var _elm_lang$html$Html_Attributes$classList = function (list) {
+	return _elm_lang$html$Html_Attributes$class(
+		A2(
+			_elm_lang$core$String$join,
+			' ',
+			A2(
+				_elm_lang$core$List$map,
+				_elm_lang$core$Tuple$first,
+				A2(_elm_lang$core$List$filter, _elm_lang$core$Tuple$second, list))));
+};
+var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
+
 var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int);
 var _elm_lang$html$Html_Events$targetChecked = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -8666,186 +9016,199 @@ var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$drawText = A2(
-	_elm_lang$svg$Svg$text_,
-	{
-		ctor: '::',
-		_0: _elm_lang$svg$Svg_Attributes$x('15'),
-		_1: {
+var _user$project$Main$px = function (num) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(num),
+		'px');
+};
+var _user$project$Main$availabilityColor = function (state) {
+	var _p0 = state;
+	if (_p0.ctor === 'Available') {
+		return '#33cc33';
+	} else {
+		return '#ff3300';
+	}
+};
+var _user$project$Main_ops = _user$project$Main_ops || {};
+_user$project$Main_ops['=>'] = F2(
+	function (v0, v1) {
+		return {ctor: '_Tuple2', _0: v0, _1: v1};
+	});
+var _user$project$Main$styles = F3(
+	function (left, top, availability) {
+		return {
 			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$y('15'),
+			_0: A2(
+				_user$project$Main_ops['=>'],
+				'background-color',
+				_user$project$Main$availabilityColor(availability)),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$transform('rotate(30 20, 40)'),
+				_0: A2(_user$project$Main_ops['=>'], 'cursor', 'move'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$fill('0x808080'),
-					_1: {ctor: '[]'}
+					_0: A2(_user$project$Main_ops['=>'], 'width', '100px'),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$Main_ops['=>'], 'height', '100px'),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$Main_ops['=>'], 'border-radius', '4px'),
+							_1: {
+								ctor: '::',
+								_0: A2(_user$project$Main_ops['=>'], 'position', 'absolute'),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_user$project$Main_ops['=>'],
+										'left',
+										_user$project$Main$px(left)),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_user$project$Main_ops['=>'],
+											'top',
+											_user$project$Main$px(top)),
+										_1: {
+											ctor: '::',
+											_0: A2(_user$project$Main_ops['=>'], 'color', 'white'),
+											_1: {
+												ctor: '::',
+												_0: A2(_user$project$Main_ops['=>'], 'display', 'flex'),
+												_1: {
+													ctor: '::',
+													_0: A2(_user$project$Main_ops['=>'], 'align-items', 'center'),
+													_1: {
+														ctor: '::',
+														_0: A2(_user$project$Main_ops['=>'], 'justify-content', 'center'),
+														_1: {
+															ctor: '::',
+															_0: A2(_user$project$Main_ops['=>'], 'font-size', '26px'),
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
-		}
-	},
-	{
-		ctor: '::',
-		_0: _elm_lang$svg$Svg$text('Parking!'),
-		_1: {ctor: '[]'}
+		};
 	});
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		if (_p0.ctor === 'Left') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{width: model.width + 10}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{width: model.width - 10}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		}
-	});
-var _user$project$Main$Garage = F3(
-	function (a, b, c) {
-		return {height: a, width: b, parkingSpots: c};
-	});
-var _user$project$Main$ParkingSpot = F5(
-	function (a, b, c, d, e) {
-		return {number: a, x: b, y: c, orientation: d, state: e};
+var _user$project$Main$ParkingSpot = F4(
+	function (a, b, c, d) {
+		return {id: a, left: b, top: c, state: d};
 	});
 var _user$project$Main$Booked = {ctor: 'Booked'};
 var _user$project$Main$initParkingSpots = {
-	ctor: '::',
-	_0: {number: 1, x: 10, y: 10, orientation: 15, state: _user$project$Main$Booked},
-	_1: {ctor: '[]'}
-};
-var _user$project$Main$initGarage = {
 	ctor: '_Tuple2',
-	_0: {height: 200, width: 300, parkingSpots: _user$project$Main$initParkingSpots},
+	_0: {
+		ctor: '::',
+		_0: {id: 1, left: 10, top: 100, state: _user$project$Main$Booked},
+		_1: {
+			ctor: '::',
+			_0: {id: 2, left: 120, top: 100, state: _user$project$Main$Booked},
+			_1: {
+				ctor: '::',
+				_0: {id: 3, left: 230, top: 100, state: _user$project$Main$Booked},
+				_1: {
+					ctor: '::',
+					_0: {id: 24, left: 10, top: 300, state: _user$project$Main$Booked},
+					_1: {
+						ctor: '::',
+						_0: {id: 23, left: 120, top: 300, state: _user$project$Main$Booked},
+						_1: {
+							ctor: '::',
+							_0: {id: 22, left: 230, top: 300, state: _user$project$Main$Booked},
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		}
+	},
 	_1: _elm_lang$core$Platform_Cmd$none
 };
 var _user$project$Main$Available = {ctor: 'Available'};
-var _user$project$Main$Right = {ctor: 'Right'};
-var _user$project$Main$drawSpot = A2(
-	_elm_lang$svg$Svg$rect,
-	{
-		ctor: '::',
-		_0: _elm_lang$svg$Svg_Attributes$x('100'),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$y('100'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$width('100'),
-				_1: {
+var _user$project$Main$toggleSpot = function (spot) {
+	var _p1 = spot.state;
+	if (_p1.ctor === 'Booked') {
+		return _elm_lang$core$Native_Utils.update(
+			spot,
+			{state: _user$project$Main$Available});
+	} else {
+		return _elm_lang$core$Native_Utils.update(
+			spot,
+			{state: _user$project$Main$Booked});
+	}
+};
+var _user$project$Main$toggle = F2(
+	function (spotId, list) {
+		var _p2 = list;
+		if (_p2.ctor === '[]') {
+			return list;
+		} else {
+			if (_p2._1.ctor === '[]') {
+				return {
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$height('100'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$rx('5'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$ry('5'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$fill('#790B0E'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Right),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
+					_0: _user$project$Main$toggleSpot(_p2._0),
+					_1: {ctor: '[]'}
+				};
+			} else {
+				return {
+					ctor: '::',
+					_0: _user$project$Main$toggleSpot(_p2._0),
+					_1: _p2._1
+				};
 			}
 		}
-	},
-	{ctor: '[]'});
-var _user$project$Main$Left = {ctor: 'Left'};
-var _user$project$Main$drawGarage = A2(
-	_elm_lang$svg$Svg$rect,
-	{
-		ctor: '::',
-		_0: _elm_lang$svg$Svg_Attributes$x('10'),
-		_1: {
+	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p3 = msg;
+		return {
+			ctor: '_Tuple2',
+			_0: A2(_user$project$Main$toggle, _p3._0, model),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _user$project$Main$Toggle = function (a) {
+	return {ctor: 'Toggle', _0: a};
+};
+var _user$project$Main$renderParkingSpot = function (spot) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
 			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$y('10'),
+			_0: _elm_lang$html$Html_Attributes$style(
+				A3(_user$project$Main$styles, spot.left, spot.top, spot.state)),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$width(
-					_elm_lang$core$Basics$toString(500)),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$height(
-						_elm_lang$core$Basics$toString(500)),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$rx('5'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$ry('5'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$fill('#0B79CE'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Left),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
+				_0: _elm_lang$html$Html_Events$onClick(
+					_user$project$Main$Toggle(spot.id)),
+				_1: {ctor: '[]'}
 			}
-		}
-	},
-	{ctor: '[]'});
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$svg$Svg$text(
+				_elm_lang$core$Basics$toString(spot.id)),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$svg$Svg$svg,
-				{
-					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$width('600'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$height('600'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 600 600'),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				{
-					ctor: '::',
-					_0: _user$project$Main$drawGarage,
-					_1: {
-						ctor: '::',
-						_0: _user$project$Main$drawText,
-						_1: {
-							ctor: '::',
-							_0: _user$project$Main$drawSpot,
-							_1: {ctor: '[]'}
-						}
-					}
-				}),
-			_1: {ctor: '[]'}
-		});
+		A2(_elm_lang$core$List$map, _user$project$Main$renderParkingSpot, model));
 };
 var _user$project$Main$main = _elm_lang$html$Html$program(
-	{init: _user$project$Main$initGarage, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();
+	{init: _user$project$Main$initParkingSpots, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
