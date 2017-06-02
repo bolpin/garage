@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html, div)
+import Html.Attributes exposing (..)
 import Svg exposing (Svg, svg, text, text_, rect)
 import Svg.Attributes exposing (x, y, rotate, transform, width, height, viewBox, fill, rx, ry)
 import Time exposing (Time, second)
@@ -9,7 +10,7 @@ import Html.Events exposing (onClick)
 
 main =
     Html.program
-        { init = initGarage
+        { init = initParkingSpots
         , view = view
         , update = update
         , subscriptions = subscriptions
@@ -17,42 +18,50 @@ main =
 
 
 type alias Model =
-    Garage
+    List ParkingSpot
 
 
-initGarage : ( Model, Cmd Msg )
-initGarage =
-    ( { height = 200
-      , width = 300
-      , parkingSpots = initParkingSpots
-      }
+initParkingSpots : ( Model, Cmd Msg )
+initParkingSpots =
+    ( [ { id = 1
+        , left = 10
+        , top = 100
+        , state = Booked
+        }
+      , { id = 2
+        , left = 120
+        , top = 100
+        , state = Booked
+        }
+      , { id = 3
+        , left = 230
+        , top = 100
+        , state = Booked
+        }
+      , { id = 24
+        , left = 10
+        , top = 300
+        , state = Booked
+        }
+      , { id = 23
+        , left = 120
+        , top = 300
+        , state = Booked
+        }
+      , { id = 22
+        , left = 230
+        , top = 300
+        , state = Booked
+        }
+      ]
     , Cmd.none
     )
 
 
-initParkingSpots : List ParkingSpot
-initParkingSpots =
-    [ { number = 1
-      , x = 10
-      , y = 10
-      , orientation = 15
-      , state = Booked
-      }
-    ]
-
-
-type alias Garage =
-    { height : Int
-    , width : Int
-    , parkingSpots : List ParkingSpot
-    }
-
-
 type alias ParkingSpot =
-    { number : Int
-    , x : Int
-    , y : Int
-    , orientation : Int -- degrees
+    { id : Int
+    , left : Int
+    , top : Int
     , state : State
     }
 
@@ -67,53 +76,75 @@ type State
 
 
 type Msg
-    = Left
-    | Right
+    = Toggle Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Left ->
-            ( { model | width = model.width + 10 }, Cmd.none )
-
-        _ ->
-            ( { model | width = model.width - 10 }, Cmd.none )
+        Toggle id ->
+            ( model, Cmd.none )
 
 
 
 -- VIEW
 
 
+(=>) =
+    (,)
+
+
 view : Model -> Html Msg
 view model =
     div []
-        [ svg
-            [ width "600", height "600", viewBox "0 0 600 600" ]
-            [ drawGarage
-            , drawText
-            , drawSpot
-            ]
+        (List.map
+            renderParkingSpot
+            model
+        )
+
+
+renderParkingSpot : ParkingSpot -> Html Msg
+renderParkingSpot spot =
+    div
+        [ style
+            (styles spot.left spot.top spot.state)
+        , onClick (Toggle spot.id)
+        ]
+        [ text (toString spot.id)
         ]
 
 
-drawText : Svg Msg
-drawText =
-    text_ [ x "15", y "15", transform "rotate(30 20, 40)", fill "0x808080" ] [ text "Parking!" ]
+styles : Int -> Int -> State -> List ( String, String )
+styles left top availability =
+    [ "background-color" => availabilityColor availability
+    , "cursor" => "move"
+    , "width" => "100px"
+    , "height" => "100px"
+    , "border-radius" => "4px"
+    , "position" => "absolute"
+    , "left" => px left
+    , "top" => px top
+    , "color" => "white"
+    , "display" => "flex"
+    , "align-items" => "center"
+    , "justify-content" => "center"
+    , "font-size" => "26px"
+    ]
 
 
-drawGarage : Svg Msg
-drawGarage =
-    rect [ x "10", y "10", width (toString 500), height (toString 500), rx "5", ry "5", fill "#0B79CE", onClick Left ] []
+availabilityColor : State -> String
+availabilityColor state =
+    case state of
+        Available ->
+            "#33cc33"
+
+        Booked ->
+            "#ff3300"
 
 
-drawSpot : Svg Msg
-drawSpot =
-    rect [ x "100", y "100", width "100", height "100", rx "5", ry "5", fill "#790B0E", onClick Right ] []
-
-
-
--- SUBSCRIPTIONS
+px : Int -> String
+px num =
+    toString num ++ "px"
 
 
 subscriptions : Model -> Sub Msg
