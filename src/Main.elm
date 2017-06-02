@@ -1,10 +1,7 @@
 module Main exposing (..)
 
-import Html exposing (Html, div)
+import Html exposing (Html, div, text)
 import Html.Attributes exposing (..)
-import Svg exposing (Svg, svg, text, text_, rect)
-import Svg.Attributes exposing (x, y, rotate, transform, width, height, viewBox, fill, rx, ry)
-import Time exposing (Time, second)
 import Html.Events exposing (onClick)
 
 
@@ -21,43 +18,6 @@ type alias Model =
     List ParkingSpot
 
 
-initParkingSpots : ( Model, Cmd Msg )
-initParkingSpots =
-    ( [ { id = 1
-        , left = 10
-        , top = 100
-        , state = Booked
-        }
-      , { id = 2
-        , left = 120
-        , top = 100
-        , state = Booked
-        }
-      , { id = 3
-        , left = 230
-        , top = 100
-        , state = Booked
-        }
-      , { id = 24
-        , left = 10
-        , top = 300
-        , state = Booked
-        }
-      , { id = 23
-        , left = 120
-        , top = 300
-        , state = Booked
-        }
-      , { id = 22
-        , left = 230
-        , top = 300
-        , state = Booked
-        }
-      ]
-    , Cmd.none
-    )
-
-
 type alias ParkingSpot =
     { id : Int
     , left : Int
@@ -69,6 +29,16 @@ type alias ParkingSpot =
 type State
     = Available
     | Booked
+
+
+initParkingSpots : ( Model, Cmd Msg )
+initParkingSpots =
+    ( [ { id = 101, left = 10, top = 100, state = Booked }
+      , { id = 102, left = 120, top = 100, state = Booked }
+      , { id = 103, left = 230, top = 100, state = Booked }
+      ]
+    , Cmd.none
+    )
 
 
 
@@ -88,25 +58,25 @@ update msg model =
 
 toggle : Int -> List ParkingSpot -> Model
 toggle spotId list =
-    case list of
-        [] ->
-            list
+    let
+        toggleSpot : ParkingSpot -> ParkingSpot
+        toggleSpot spot =
+            case spot.state of
+                Booked ->
+                    { spot | state = Available }
 
-        [ spot ] ->
-            [ toggleSpot spot ]
+                Available ->
+                    { spot | state = Booked }
+    in
+        case list of
+            [] ->
+                list
 
-        spot :: rest ->
-            toggleSpot (spot) :: rest
-
-
-toggleSpot : ParkingSpot -> ParkingSpot
-toggleSpot spot =
-    case spot.state of
-        Booked ->
-            { spot | state = Available }
-
-        Available ->
-            { spot | state = Booked }
+            x :: xs ->
+                if x.id == spotId then
+                    toggleSpot x :: xs
+                else
+                    x :: toggle spotId xs
 
 
 
@@ -119,55 +89,51 @@ toggleSpot spot =
 
 view : Model -> Html Msg
 view model =
-    div []
-        (List.map
-            renderParkingSpot
-            model
-        )
+    let
+        parkingSpotStyles : Int -> Int -> State -> List ( String, String )
+        parkingSpotStyles left top availability =
+            [ "background-color" => availabilityColor availability
+            , "cursor" => "pointer"
+            , "width" => "100px"
+            , "height" => "100px"
+            , "border-radius" => "4px"
+            , "position" => "absolute"
+            , "left" => px left
+            , "top" => px top
+            , "color" => "white"
+            , "display" => "flex"
+            , "align-items" => "center"
+            , "justify-content" => "center"
+            , "font-size" => "26px"
+            ]
 
+        availabilityColor : State -> String
+        availabilityColor state =
+            case state of
+                Available ->
+                    "#33cc33"
 
-renderParkingSpot : ParkingSpot -> Html Msg
-renderParkingSpot spot =
-    div
-        [ style
-            (styles spot.left spot.top spot.state)
-        , onClick (Toggle spot.id)
-        ]
-        [ text (toString spot.id)
-        ]
+                Booked ->
+                    "#ff3300"
 
+        px : Int -> String
+        px num =
+            toString num ++ "px"
 
-styles : Int -> Int -> State -> List ( String, String )
-styles left top availability =
-    [ "background-color" => availabilityColor availability
-    , "cursor" => "move"
-    , "width" => "100px"
-    , "height" => "100px"
-    , "border-radius" => "4px"
-    , "position" => "absolute"
-    , "left" => px left
-    , "top" => px top
-    , "color" => "white"
-    , "display" => "flex"
-    , "align-items" => "center"
-    , "justify-content" => "center"
-    , "font-size" => "26px"
-    ]
-
-
-availabilityColor : State -> String
-availabilityColor state =
-    case state of
-        Available ->
-            "#33cc33"
-
-        Booked ->
-            "#ff3300"
-
-
-px : Int -> String
-px num =
-    toString num ++ "px"
+        renderParkingSpot : ParkingSpot -> Html Msg
+        renderParkingSpot spot =
+            div
+                [ style (parkingSpotStyles spot.left spot.top spot.state)
+                , onClick (Toggle spot.id)
+                ]
+                [ text (toString spot.id)
+                ]
+    in
+        div []
+            (List.map
+                renderParkingSpot
+                model
+            )
 
 
 subscriptions : Model -> Sub Msg
