@@ -83,28 +83,24 @@ toggle spotId list =
 -- VIEW
 
 
-(=>) =
-    (,)
-
-
 view : Model -> Html Msg
 view model =
     let
         parkingSpotStyles : Int -> Int -> State -> List ( String, String )
         parkingSpotStyles left top availability =
-            [ "background-color" => availabilityColor availability
-            , "cursor" => "pointer"
-            , "width" => "100px"
-            , "height" => "100px"
-            , "border-radius" => "4px"
-            , "position" => "absolute"
-            , "left" => px left
-            , "top" => px top
-            , "color" => "white"
-            , "display" => "flex"
-            , "align-items" => "center"
-            , "justify-content" => "center"
-            , "font-size" => "26px"
+            [ ( "background-color", availabilityColor availability )
+            , ( "cursor", "pointer" )
+            , ( "width", "100px" )
+            , ( "height", "100px" )
+            , ( "border-radius", "4px" )
+            , ( "position", "absolute" )
+            , ( "left", px left )
+            , ( "top", px top )
+            , ( "color", "white" )
+            , ( "display", "flex" )
+            , ( "align-items", "center" )
+            , ( "justify-content", "center" )
+            , ( "font-size", "26px" )
             ]
 
         availabilityColor : State -> String

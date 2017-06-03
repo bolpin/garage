@@ -8263,11 +8263,6 @@ var _elm_lang$html$Html_Events$Options = F2(
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main_ops = _user$project$Main_ops || {};
-_user$project$Main_ops['=>'] = F2(
-	function (v0, v1) {
-		return {ctor: '_Tuple2', _0: v0, _1: v1};
-	});
 var _user$project$Main$ParkingSpot = F4(
 	function (a, b, c, d) {
 		return {id: a, left: b, top: c, state: d};
@@ -8353,52 +8348,55 @@ var _user$project$Main$view = function (model) {
 		function (left, top, availability) {
 			return {
 				ctor: '::',
-				_0: A2(
-					_user$project$Main_ops['=>'],
-					'background-color',
-					availabilityColor(availability)),
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'background-color',
+					_1: availabilityColor(availability)
+				},
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Main_ops['=>'], 'cursor', 'pointer'),
+					_0: {ctor: '_Tuple2', _0: 'cursor', _1: 'pointer'},
 					_1: {
 						ctor: '::',
-						_0: A2(_user$project$Main_ops['=>'], 'width', '100px'),
+						_0: {ctor: '_Tuple2', _0: 'width', _1: '100px'},
 						_1: {
 							ctor: '::',
-							_0: A2(_user$project$Main_ops['=>'], 'height', '100px'),
+							_0: {ctor: '_Tuple2', _0: 'height', _1: '100px'},
 							_1: {
 								ctor: '::',
-								_0: A2(_user$project$Main_ops['=>'], 'border-radius', '4px'),
+								_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '4px'},
 								_1: {
 									ctor: '::',
-									_0: A2(_user$project$Main_ops['=>'], 'position', 'absolute'),
+									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
 									_1: {
 										ctor: '::',
-										_0: A2(
-											_user$project$Main_ops['=>'],
-											'left',
-											px(left)),
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'left',
+											_1: px(left)
+										},
 										_1: {
 											ctor: '::',
-											_0: A2(
-												_user$project$Main_ops['=>'],
-												'top',
-												px(top)),
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'top',
+												_1: px(top)
+											},
 											_1: {
 												ctor: '::',
-												_0: A2(_user$project$Main_ops['=>'], 'color', 'white'),
+												_0: {ctor: '_Tuple2', _0: 'color', _1: 'white'},
 												_1: {
 													ctor: '::',
-													_0: A2(_user$project$Main_ops['=>'], 'display', 'flex'),
+													_0: {ctor: '_Tuple2', _0: 'display', _1: 'flex'},
 													_1: {
 														ctor: '::',
-														_0: A2(_user$project$Main_ops['=>'], 'align-items', 'center'),
+														_0: {ctor: '_Tuple2', _0: 'align-items', _1: 'center'},
 														_1: {
 															ctor: '::',
-															_0: A2(_user$project$Main_ops['=>'], 'justify-content', 'center'),
+															_0: {ctor: '_Tuple2', _0: 'justify-content', _1: 'center'},
 															_1: {
 																ctor: '::',
-																_0: A2(_user$project$Main_ops['=>'], 'font-size', '26px'),
+																_0: {ctor: '_Tuple2', _0: 'font-size', _1: '26px'},
 																_1: {ctor: '[]'}
 															}
 														}
