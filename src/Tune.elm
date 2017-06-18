@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, text)
+import Html exposing (Html, div, text, span)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
@@ -15,16 +15,17 @@ main =
 
 
 type alias Model =
-    { lines : List Line
+    { measures : List Measure
     , timeSignature : TimeSignature
     , key : Key
     }
 
 
-type alias Line =
-    { yOffset : Int
-    , measures : List Measure
-    }
+
+-- type alias Line =
+--     { measures : List Measure
+--     }
+--
 
 
 type alias Measure =
@@ -34,7 +35,7 @@ type alias Measure =
 
 type alias Beat =
     { chord : Chord
-    , display : BeatDisplayType
+    , display : BeatDisplay
     }
 
 
@@ -58,11 +59,10 @@ type TimeSignature
     = FourFour
 
 
-type BeatDisplayType
-    = ChordName
-    | ChordNashville
+type BeatDisplay
+    = Normal
+    | Nashville
     | Slash
-    | Rest
 
 
 type State
@@ -87,10 +87,41 @@ type Key
 
 initTune : ( Model, Cmd Msg )
 initTune =
-    ( [ { measures = [], timeSignature = FourFour }
-      ]
-    , Cmd.none
-    )
+    { key = C, measures = initMeasures, timeSignature = FourFour }
+        ! [ Cmd.none ]
+
+
+
+-- initLines : List Line
+-- initLines =
+--     [ { measures = initMeasures }
+--     , { measures = initMeasures }
+--     ]
+
+
+initMeasures : List Measure
+initMeasures =
+    [ { beats = initBeats }
+    , { beats = initBeats }
+    , { beats = initBeats }
+    , { beats = initBeats }
+    ]
+
+
+initBeats : List Beat
+initBeats =
+    [ { chord = initChord, display = Normal }
+    , { chord = initChord, display = Slash }
+    , { chord = initChord, display = Slash }
+    , { chord = initChord, display = Slash }
+    ]
+
+
+initChord : Chord
+initChord =
+    { nashville = 1
+    , chordType = Maj
+    }
 
 
 
@@ -98,36 +129,14 @@ initTune =
 
 
 type Msg
-    = Toggle Int
+    = NoOp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Toggle id ->
-            ( toggle id model, Cmd.none )
-
-
-toggle : Int -> List Measure -> Model
-toggle measureId list =
-    let
-        toggleMeasure measure =
-            case measure.state of
-                Booked ->
-                    { measure | state = Available }
-
-                Available ->
-                    { measure | state = Booked }
-    in
-        case list of
-            [] ->
-                list
-
-            x :: xs ->
-                if x.id == measureId then
-                    toggleMeasure x :: xs
-                else
-                    x :: toggle measureId xs
+        NoOp ->
+            ( model, Cmd.none )
 
 
 
@@ -140,21 +149,110 @@ view model =
         px : Int -> String
         px num =
             toString num ++ "px"
-
-        renderMeasure : Measure -> Html Msg
-        renderMeasure measure =
-            div
-                [ style (measureStyles measure.left measure.top measure.state)
-                , onClick (Toggle measure.id)
-                ]
-                [ text (toString measure.id)
-                ]
     in
-        div []
-            (List.map
-                renderMeasure
-                model
-            )
+        div
+            [ style
+                [ ( "position", "absolute" )
+                , ( "left", "0px" )
+                , ( "top", "0px" )
+                , ( "width", "100%" )
+                , ( "height", "100%" )
+                ]
+            ]
+            [ div
+                [ style
+                    [ ( "display", "flex" )
+                    , ( "flex-direction", "row" )
+                    , ( "flex-wrap", "wrap" )
+                    , ( "justify-content", "left" )
+                    , ( "position", "absolute" )
+                    , ( "left", "0px" )
+                    , ( "top", "0px" )
+                    , ( "width", "100%" )
+                    ]
+                ]
+                (List.map
+                    viewMeasure
+                    model.measures
+                )
+            ]
+
+
+viewMeasure : Measure -> Html Msg
+viewMeasure measure =
+    div
+        [ style
+            [ ( "position", "relative" )
+            , ( "text-align", "center" )
+            , ( "cursor", "pointer" )
+            , ( "border-style", "solid" )
+            , ( "vertical-align", "middle" )
+            , ( "width", "200px" )
+            , ( "height", "40px" )
+            , ( "margin", "10px" )
+            , ( "padding", "10px" )
+            , ( "border-color", "#CCC" )
+            , ( "border-width", "2px" )
+            , ( "border-radius", "8px" )
+            , ( "vertical", "middle" )
+            , ( "vertical", "middle" )
+            , ( "display", "flex" )
+            , ( "flex-direction", "row" )
+            , ( "flex-basis", "auto" )
+            ]
+        ]
+        (List.map viewBeat measure.beats)
+
+
+viewBeat : Beat -> Html Msg
+viewBeat beat =
+    span
+        [ style
+            [ ( "position", "relative" )
+            , ( "text-align", "center" )
+            , ( "cursor", "pointer" )
+            , ( "border-style", "solid" )
+            , ( "vertical-align", "middle" )
+            , ( "flex-basis", "0" )
+            , ( "flex-grow", "1" )
+            , ( "border-color", "#CCC" )
+            ]
+        ]
+        [ text <| chordString beat ]
+
+
+nashvilleToName : Int -> Key -> String
+nashvilleToName nashville key =
+    "TODO"
+
+
+chordString : Beat -> String
+chordString beat =
+    let
+        primary =
+            "C"
+
+        secondary =
+            "Maj"
+
+        chordName =
+            primary ++ secondary
+
+        slash =
+            "/"
+
+        rest =
+            "."
+    in
+        case ( beat.chord, beat.display ) of
+            ( chord, Normal ) ->
+                "AbMin7"
+
+            ( chord, Nashville ) ->
+                toString chord.nashville
+
+            ( _, Slash ) ->
+                "/"
 
 
 subscriptions : Model -> Sub Msg
