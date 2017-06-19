@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, text, span)
+import Html exposing (Html, div, text, span, button)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
@@ -91,14 +91,6 @@ initTune =
         ! [ Cmd.none ]
 
 
-
--- initLines : List Line
--- initLines =
---     [ { measures = initMeasures }
---     , { measures = initMeasures }
---     ]
-
-
 initMeasures : List Measure
 initMeasures =
     [ { beats = initBeats }
@@ -130,12 +122,20 @@ initChord =
 
 type Msg
     = NoOp
+    | HalfStepUp Int
+    | HalfStepDown Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
+            ( model, Cmd.none )
+
+        HalfStepUp beatId ->
+            ( model, Cmd.none )
+
+        HalfStepDown beatId ->
             ( model, Cmd.none )
 
 
@@ -171,10 +171,7 @@ view model =
                     , ( "width", "100%" )
                     ]
                 ]
-                (List.map
-                    viewMeasure
-                    model.measures
-                )
+                (List.map viewMeasure model.measures)
             ]
 
 
@@ -192,9 +189,7 @@ viewMeasure measure =
             , ( "margin", "10px" )
             , ( "padding", "10px" )
             , ( "border-color", "#CCC" )
-            , ( "border-width", "2px" )
-            , ( "border-radius", "8px" )
-            , ( "vertical", "middle" )
+            , ( "border-width", "0 2px 0 0" )
             , ( "vertical", "middle" )
             , ( "display", "flex" )
             , ( "flex-direction", "row" )
@@ -210,20 +205,31 @@ viewBeat beat =
         [ style
             [ ( "position", "relative" )
             , ( "text-align", "center" )
-            , ( "cursor", "pointer" )
-            , ( "border-style", "solid" )
-            , ( "vertical-align", "middle" )
+            , ( "line-height", "40px" )
             , ( "flex-basis", "0" )
             , ( "flex-grow", "1" )
-            , ( "border-color", "#CCC" )
             ]
         ]
-        [ text <| chordString beat ]
+        [ text <| chordString beat
+        ]
 
 
 nashvilleToName : Int -> Key -> String
 nashvilleToName nashville key =
     "TODO"
+
+
+
+-- viewHalfStepUpControl : Beat -> Html Msg
+-- viewHalfStepUpControl beat =
+--     button [ onClick HalfStepUp beat.id ]
+--         [ text "⬆" ]
+--
+--
+-- viewHalfStepDownControl : Beat -> Html Msg
+-- viewHalfStepDownControl beat =
+--     button [ onClick HalfStepDown beat.id ]
+--         [ text "⬇" ]
 
 
 chordString : Beat -> String
