@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (Html, div, text, span, button)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Dict exposing (..)
 
 
 main =
@@ -15,62 +16,11 @@ main =
 
 
 type alias Model =
-    { measures : List Measure
-    , timeSignature : TimeSignature
-    , key : Key
+    { beats : Dict ( Int, Int ) Beat
     }
 
 
-
--- type alias Line =
---     { measures : List Measure
---     }
---
-
-
-type alias Measure =
-    { beats : List Beat
-    }
-
-
-type alias Beat =
-    { chord : Chord
-    , display : BeatDisplay
-    }
-
-
-type alias Chord =
-    { nashville : Int
-    , chordType : ChordType
-    }
-
-
-type ChordType
-    = Maj
-    | Min
-    | Seven
-    | Diminished
-    | Aug5
-    | Maj7
-    | Min7
-
-
-type TimeSignature
-    = FourFour
-
-
-type BeatDisplay
-    = Normal
-    | Nashville
-    | Slash
-
-
-type State
-    = Available
-    | Booked
-
-
-type Key
+type Tone
     = C
     | CSharp
     | D
@@ -85,35 +35,95 @@ type Key
     | B
 
 
+type ChordFlavor
+    = Maj
+    | Min
+    | Seven
+    | Diminished
+    | Aug5
+    | Maj7
+    | Min7
+
+
+type alias Beat =
+    { chord : Maybe Chord }
+
+
+type alias Chord =
+    { tone : Int
+    , chordFlavor : Maybe ChordFlavor
+    }
+
+
 initTune : ( Model, Cmd Msg )
 initTune =
-    { key = C, measures = initMeasures, timeSignature = FourFour }
+    { beats = initBeats }
         ! [ Cmd.none ]
 
 
-initMeasures : List Measure
-initMeasures =
-    [ { beats = initBeats }
-    , { beats = initBeats }
-    , { beats = initBeats }
-    , { beats = initBeats }
-    ]
-
-
-initBeats : List Beat
+initBeats : Dict ( Int, Int ) Beat
 initBeats =
-    [ { chord = initChord, display = Normal }
-    , { chord = initChord, display = Slash }
-    , { chord = initChord, display = Slash }
-    , { chord = initChord, display = Slash }
-    ]
+    Dict.fromList
+        [ ( ( 0, 0 ), { chord = Just { tone = 0, chordFlavor = Nothing } } )
+        , ( ( 0, 1 ), { chord = Just { tone = 0, chordFlavor = Nothing } } )
+        , ( ( 0, 2 ), { chord = Just { tone = 0, chordFlavor = Nothing } } )
+        , ( ( 0, 3 ), { chord = Just { tone = 0, chordFlavor = Nothing } } )
+        ]
 
 
-initChord : Chord
-initChord =
-    { nashville = 1
-    , chordType = Maj
+
+-- initBeat : Tone -> Beat
+-- initBeat tone =
+
+
+initChord : Int -> Chord
+initChord t =
+    { tone = t
+    , chordFlavor = Just Maj
     }
+
+
+intToTone : Int -> Maybe Tone
+intToTone n =
+    case n of
+        0 ->
+            Just C
+
+        1 ->
+            Just CSharp
+
+        2 ->
+            Just D
+
+        3 ->
+            Just DSharp
+
+        4 ->
+            Just E
+
+        5 ->
+            Just F
+
+        6 ->
+            Just FSharp
+
+        7 ->
+            Just G
+
+        8 ->
+            Just GSharp
+
+        9 ->
+            Just A
+
+        10 ->
+            Just ASharp
+
+        11 ->
+            Just B
+
+        _ ->
+            Nothing
 
 
 
@@ -122,20 +132,12 @@ initChord =
 
 type Msg
     = NoOp
-    | HalfStepUp Int
-    | HalfStepDown Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
-            ( model, Cmd.none )
-
-        HalfStepUp beatId ->
-            ( model, Cmd.none )
-
-        HalfStepDown beatId ->
             ( model, Cmd.none )
 
 
@@ -171,32 +173,38 @@ view model =
                     , ( "width", "100%" )
                     ]
                 ]
-                (List.map viewMeasure model.measures)
+                (List.map viewBeat (Dict.values model.beats))
             ]
 
 
-viewMeasure : Measure -> Html Msg
-viewMeasure measure =
-    div
-        [ style
-            [ ( "position", "relative" )
-            , ( "text-align", "center" )
-            , ( "cursor", "pointer" )
-            , ( "border-style", "solid" )
-            , ( "vertical-align", "middle" )
-            , ( "width", "200px" )
-            , ( "height", "40px" )
-            , ( "margin", "10px" )
-            , ( "padding", "10px" )
-            , ( "border-color", "#CCC" )
-            , ( "border-width", "0 2px 0 0" )
-            , ( "vertical", "middle" )
-            , ( "display", "flex" )
-            , ( "flex-direction", "row" )
-            , ( "flex-basis", "auto" )
-            ]
-        ]
-        (List.map viewBeat measure.beats)
+
+-- viewMeasure : List Beat -> Html Msg
+-- viewMeasure measure =
+--     div
+--         [ style
+--             [ ( "position", "relative" )
+--             , ( "text-align", "center" )
+--             , ( "cursor", "pointer" )
+--             , ( "border-style", "solid" )
+--             , ( "vertical-align", "middle" )
+--             , ( "width", "200px" )
+--             , ( "height", "40px" )
+--             , ( "margin", "10px" )
+--             , ( "padding", "10px" )
+--             , ( "border-color", "#CCC" )
+--             , ( "border-width", "0 2px 0 0" )
+--             , ( "vertical", "middle" )
+--             , ( "display", "flex" )
+--             , ( "flex-direction", "row" )
+--             , ( "flex-basis", "auto" )
+--             ]
+--         ]
+--         []
+--
+--
+--
+-- -- (List.map viewBeat measure.beats)
+--
 
 
 viewBeat : Beat -> Html Msg
@@ -214,51 +222,93 @@ viewBeat beat =
         ]
 
 
-nashvilleToName : Int -> Key -> String
-nashvilleToName nashville key =
-    "TODO"
-
-
-
--- viewHalfStepUpControl : Beat -> Html Msg
--- viewHalfStepUpControl beat =
---     button [ onClick HalfStepUp beat.id ]
---         [ text "⬆" ]
---
---
--- viewHalfStepDownControl : Beat -> Html Msg
--- viewHalfStepDownControl beat =
---     button [ onClick HalfStepDown beat.id ]
---         [ text "⬇" ]
-
-
 chordString : Beat -> String
 chordString beat =
-    let
-        primary =
-            "C"
+    case beat.chord of
+        Just chord ->
+            chordToString chord
 
-        secondary =
-            "Maj"
-
-        chordName =
-            primary ++ secondary
-
-        slash =
+        Nothing ->
             "/"
 
-        rest =
-            "."
+
+chordToString : Chord -> String
+chordToString chord =
+    let
+        primary tone =
+            case (intToTone chord.tone) of
+                Just C ->
+                    "C"
+
+                Just CSharp ->
+                    "C#"
+
+                Just D ->
+                    "D"
+
+                Just DSharp ->
+                    "D#"
+
+                Just E ->
+                    "E"
+
+                Just F ->
+                    "E#"
+
+                Just FSharp ->
+                    "F"
+
+                Just G ->
+                    "G"
+
+                Just GSharp ->
+                    "G#"
+
+                Just A ->
+                    "A"
+
+                Just ASharp ->
+                    "A#"
+
+                Just B ->
+                    "B"
+
+                Nothing ->
+                    "/"
+
+        secondary chordFlavor =
+            case chordFlavor of
+                Nothing ->
+                    ""
+
+                Just Maj ->
+                    ""
+
+                Just Min ->
+                    "min"
+
+                Just Seven ->
+                    "7"
+
+                Just Diminished ->
+                    "dim"
+
+                Just Aug5 ->
+                    "+5"
+
+                Just Maj7 ->
+                    "maj7"
+
+                Just Min7 ->
+                    "min7"
     in
-        case ( beat.chord, beat.display ) of
-            ( chord, Normal ) ->
-                "AbMin7"
+        (primary chord.tone) ++ (secondary chord.chordFlavor)
 
-            ( chord, Nashville ) ->
-                toString chord.nashville
 
-            ( _, Slash ) ->
-                "/"
+viewHalfStepUpControl : Int -> Int -> Html Msg
+viewHalfStepUpControl measureId beatId =
+    button [ onClick (NoOp) ]
+        [ text "⬆" ]
 
 
 subscriptions : Model -> Sub Msg
