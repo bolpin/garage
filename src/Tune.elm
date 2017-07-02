@@ -117,6 +117,9 @@ intToTone n =
         11 ->
             B
 
+        _ ->
+            C
+
 
 
 -- UPDATE
@@ -131,24 +134,16 @@ update msg model =
     case msg of
         Increment3rd ->
             let
-                theBeat : Beat
-                theBeat =
-                    case Dict.get 3 model.beats of
+                incrementBeat : Maybe Beat -> Maybe Beat
+                incrementBeat beat =
+                    case beat of
                         Nothing ->
-                            { chord = Nothing }
+                            Just { chord = Nothing }
 
-                        Just aBeat ->
-                            aBeat
-
-                incrementedChord : Beat -> Chord
-                incrementedChord beat =
-                    increment beat.chord
-
-                newBeatDict : Dict Int Beat
-                newBeatDict =
-                    Dict.singleton 3 { chord = incrementedChord theBeat }
+                        Just b ->
+                            Just { chord = increment b.chord }
             in
-                ( { model | beats = (Dict.union newBeatDict model.beats) }, Cmd.none )
+                ( { model | beats = Dict.update 3 incrementBeat model.beats }, Cmd.none )
 
 
 increment : Maybe Chord -> Maybe Chord
@@ -160,10 +155,10 @@ increment chord =
         Just c ->
             case c.tone of
                 11 ->
-                    { tone = 0, flavor = c.flavor }
+                    Just { tone = 0, flavor = c.flavor }
 
                 _ ->
-                    { tone = chord.tone + 1, flavor = c.flavor }
+                    Just { tone = c.tone + 1, flavor = c.flavor }
 
 
 
