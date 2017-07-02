@@ -16,7 +16,7 @@ main =
 
 
 type alias Model =
-    { beats : Dict ( Int, Int ) Beat
+    { beats : Dict Int Beat
     }
 
 
@@ -35,7 +35,7 @@ type Tone
     | B
 
 
-type ChordFlavor
+type Flavor
     = Maj
     | Min
     | Seven
@@ -51,7 +51,7 @@ type alias Beat =
 
 type alias Chord =
     { tone : Int
-    , chordFlavor : Maybe ChordFlavor
+    , flavor : Flavor
     }
 
 
@@ -61,69 +61,61 @@ initTune =
         ! [ Cmd.none ]
 
 
-initBeats : Dict ( Int, Int ) Beat
+initBeats : Dict Int Beat
 initBeats =
     Dict.fromList
-        [ ( ( 0, 0 ), { chord = Just { tone = 0, chordFlavor = Nothing } } )
-        , ( ( 0, 1 ), { chord = Just { tone = 0, chordFlavor = Nothing } } )
-        , ( ( 0, 2 ), { chord = Just { tone = 0, chordFlavor = Nothing } } )
-        , ( ( 0, 3 ), { chord = Just { tone = 0, chordFlavor = Nothing } } )
+        [ ( 0, { chord = Just { tone = 1, flavor = Maj } } )
+        , ( 1, { chord = Nothing } )
+        , ( 2, { chord = Just { tone = 2, flavor = Min } } )
+        , ( 3, { chord = Just { tone = 1, flavor = Aug5 } } )
         ]
-
-
-
--- initBeat : Tone -> Beat
--- initBeat tone =
 
 
 initChord : Int -> Chord
 initChord t =
     { tone = t
-    , chordFlavor = Just Maj
+    , flavor = Maj
     }
 
 
-intToTone : Int -> Maybe Tone
+intToTone : Int -> Tone
 intToTone n =
     case n of
         0 ->
-            Just C
+            C
 
         1 ->
-            Just CSharp
+            CSharp
 
         2 ->
-            Just D
+            D
 
         3 ->
-            Just DSharp
+            DSharp
 
         4 ->
-            Just E
+            E
 
         5 ->
-            Just F
+            F
 
         6 ->
-            Just FSharp
+            FSharp
 
         7 ->
-            Just G
+            G
 
         8 ->
-            Just GSharp
+            GSharp
 
         9 ->
-            Just A
+            A
 
         10 ->
-            Just ASharp
+            ASharp
 
         11 ->
-            Just B
-
-        _ ->
-            Nothing
+            B
 
 
 
@@ -131,14 +123,47 @@ intToTone n =
 
 
 type Msg
-    = NoOp
+    = Increment3rd
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
+        Increment3rd ->
+            let
+                theBeat : Beat
+                theBeat =
+                    case Dict.get 3 model.beats of
+                        Nothing ->
+                            { chord = Nothing }
+
+                        Just aBeat ->
+                            aBeat
+
+                incrementedChord : Beat -> Chord
+                incrementedChord beat =
+                    increment beat.chord
+
+                newBeatDict : Dict Int Beat
+                newBeatDict =
+                    Dict.singleton 3 { chord = incrementedChord theBeat }
+            in
+                ( { model | beats = (Dict.union newBeatDict model.beats) }, Cmd.none )
+
+
+increment : Maybe Chord -> Maybe Chord
+increment chord =
+    case chord of
+        Nothing ->
+            Nothing
+
+        Just c ->
+            case c.tone of
+                11 ->
+                    { tone = 0, flavor = c.flavor }
+
+                _ ->
+                    { tone = chord.tone + 1, flavor = c.flavor }
 
 
 
@@ -147,64 +172,78 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    let
-        px : Int -> String
-        px num =
-            toString num ++ "px"
-    in
-        div
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "left", "0px" )
+            , ( "top", "0px" )
+            , ( "width", "100%" )
+            , ( "height", "100%" )
+            ]
+        ]
+        [ div
             [ style
-                [ ( "position", "absolute" )
+                [ ( "display", "flex" )
+                , ( "flex-direction", "row" )
+                , ( "flex-wrap", "wrap" )
+                , ( "justify-content", "left" )
+                , ( "position", "absolute" )
                 , ( "left", "0px" )
                 , ( "top", "0px" )
                 , ( "width", "100%" )
-                , ( "height", "100%" )
                 ]
             ]
-            [ div
-                [ style
-                    [ ( "display", "flex" )
-                    , ( "flex-direction", "row" )
-                    , ( "flex-wrap", "wrap" )
-                    , ( "justify-content", "left" )
-                    , ( "position", "absolute" )
-                    , ( "left", "0px" )
-                    , ( "top", "0px" )
-                    , ( "width", "100%" )
-                    ]
-                ]
-                (List.map viewBeat (Dict.values model.beats))
+            [ viewMeasures model
+            , viewControls model
             ]
+        ]
 
 
+viewControls : Model -> Html Msg
+viewControls model =
+    div []
+        [ button [ onClick Increment3rd ] [ text "+" ]
+        ]
 
--- viewMeasure : List Beat -> Html Msg
--- viewMeasure measure =
---     div
---         [ style
---             [ ( "position", "relative" )
---             , ( "text-align", "center" )
---             , ( "cursor", "pointer" )
---             , ( "border-style", "solid" )
---             , ( "vertical-align", "middle" )
---             , ( "width", "200px" )
---             , ( "height", "40px" )
---             , ( "margin", "10px" )
---             , ( "padding", "10px" )
---             , ( "border-color", "#CCC" )
---             , ( "border-width", "0 2px 0 0" )
---             , ( "vertical", "middle" )
---             , ( "display", "flex" )
---             , ( "flex-direction", "row" )
---             , ( "flex-basis", "auto" )
---             ]
---         ]
---         []
---
---
---
--- -- (List.map viewBeat measure.beats)
---
+
+viewMeasures : Model -> Html Msg
+viewMeasures model =
+    div []
+        (List.map viewMeasure (partitionIntoMeasuresList model.beats))
+
+
+partitionIntoMeasuresList : Dict Int Beat -> List (List Beat)
+partitionIntoMeasuresList allBeats =
+    let
+        keys : List Int
+        keys =
+            Dict.keys allBeats
+    in
+        [ Dict.values allBeats ]
+
+
+viewMeasure : List Beat -> Html Msg
+viewMeasure beats =
+    div
+        [ style
+            [ ( "position", "relative" )
+            , ( "text-align", "center" )
+            , ( "cursor", "pointer" )
+            , ( "border-style", "solid" )
+            , ( "vertical-align", "middle" )
+            , ( "width", "200px" )
+            , ( "height", "40px" )
+            , ( "margin", "10px" )
+            , ( "padding", "10px" )
+            , ( "border-color", "#CCC" )
+            , ( "border-width", "0 2px 0 0" )
+            , ( "vertical", "middle" )
+            , ( "display", "flex" )
+            , ( "flex-direction", "row" )
+            , ( "flex-basis", "auto" )
+            ]
+        ]
+        (List.map viewBeat beats)
 
 
 viewBeat : Beat -> Html Msg
@@ -237,77 +276,71 @@ chordToString chord =
     let
         primary tone =
             case (intToTone chord.tone) of
-                Just C ->
+                C ->
                     "C"
 
-                Just CSharp ->
+                CSharp ->
                     "C#"
 
-                Just D ->
+                D ->
                     "D"
 
-                Just DSharp ->
+                DSharp ->
                     "D#"
 
-                Just E ->
+                E ->
                     "E"
 
-                Just F ->
+                F ->
                     "E#"
 
-                Just FSharp ->
+                FSharp ->
                     "F"
 
-                Just G ->
+                G ->
                     "G"
 
-                Just GSharp ->
+                GSharp ->
                     "G#"
 
-                Just A ->
+                A ->
                     "A"
 
-                Just ASharp ->
+                ASharp ->
                     "A#"
 
-                Just B ->
+                B ->
                     "B"
 
-                Nothing ->
-                    "/"
+        secondary flavor =
+            case flavor of
+                Maj ->
+                    "maj"
 
-        secondary chordFlavor =
-            case chordFlavor of
-                Nothing ->
-                    ""
-
-                Just Maj ->
-                    ""
-
-                Just Min ->
+                Min ->
                     "min"
 
-                Just Seven ->
+                Seven ->
                     "7"
 
-                Just Diminished ->
+                Diminished ->
                     "dim"
 
-                Just Aug5 ->
+                Aug5 ->
                     "+5"
 
-                Just Maj7 ->
+                Maj7 ->
                     "maj7"
 
-                Just Min7 ->
+                Min7 ->
                     "min7"
     in
-        (primary chord.tone) ++ (secondary chord.chordFlavor)
+        (primary chord.tone) ++ (secondary chord.flavor)
 
 
 viewHalfStepUpControl : Int -> Int -> Html Msg
 viewHalfStepUpControl measureId beatId =
-    button [ onClick (NoOp) ]
+    button [ onClick (Increment3rd) ]
         [ text "⬆" ]
 
 
