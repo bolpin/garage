@@ -1,9 +1,9 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, text, span, button)
+import Dict exposing (..)
+import Html exposing (Html, button, div, span, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Dict exposing (..)
 
 
 main =
@@ -126,13 +126,13 @@ intToTone n =
 
 
 type Msg
-    = Increment3rd
+    = Increment Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Increment3rd ->
+        Increment index ->
             let
                 incrementBeat : Maybe Beat -> Maybe Beat
                 incrementBeat beat =
@@ -143,7 +143,7 @@ update msg model =
                         Just b ->
                             Just { chord = increment b.chord }
             in
-                ( { model | beats = Dict.update 3 incrementBeat model.beats }, Cmd.none )
+            ( { model | beats = Dict.update index incrementBeat model.beats }, Cmd.none )
 
 
 increment : Maybe Chord -> Maybe Chord
@@ -197,7 +197,8 @@ view model =
 viewControls : Model -> Html Msg
 viewControls model =
     div []
-        [ button [ onClick Increment3rd ] [ text "+" ]
+        [ button [ onClick (Increment 3) ] [ text "+" ]
+        , viewHalfStepUpControl 0 0
         ]
 
 
@@ -214,7 +215,7 @@ partitionIntoMeasuresList allBeats =
         keys =
             Dict.keys allBeats
     in
-        [ Dict.values allBeats ]
+    [ Dict.values allBeats ]
 
 
 viewMeasure : List Beat -> Html Msg
@@ -270,7 +271,7 @@ chordToString : Chord -> String
 chordToString chord =
     let
         primary tone =
-            case (intToTone chord.tone) of
+            case intToTone chord.tone of
                 C ->
                     "C"
 
@@ -287,10 +288,10 @@ chordToString chord =
                     "E"
 
                 F ->
-                    "E#"
+                    "F"
 
                 FSharp ->
-                    "F"
+                    "F#"
 
                 G ->
                     "G"
@@ -330,12 +331,12 @@ chordToString chord =
                 Min7 ->
                     "min7"
     in
-        (primary chord.tone) ++ (secondary chord.flavor)
+    primary chord.tone ++ secondary chord.flavor
 
 
 viewHalfStepUpControl : Int -> Int -> Html Msg
 viewHalfStepUpControl measureId beatId =
-    button [ onClick (Increment3rd) ]
+    button [ onClick (Increment ((measureId * 4) + beatId)) ]
         [ text "⬆" ]
 
 
