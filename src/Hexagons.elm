@@ -1,8 +1,7 @@
 module Hexagons exposing (..)
 
--- import Html.Attributes exposing (..)
-
-import Basics exposing (cos, pi, sin)
+import Array exposing (repeat, toList)
+import Basics exposing (cos, pi, sin, sqrt)
 import Dict exposing (..)
 import Html exposing (Html, div, text)
 import Html.Events exposing (onClick)
@@ -17,11 +16,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-
--- Hex x, y, size
--- HexGrid x, y, width, height, size
 
 
 type alias Model =
@@ -57,48 +51,101 @@ update msg model =
 
 
 -- VIEW
+-- hexGrid : List (Html Msg)
+-- hexGrid =
+--     let
+--         longDiameter =
+--             sqrt 3 * radius
+--     in
+--     [ drawHex 40.0 50.0 ]
 
 
-hexPoints : Int -> Int -> String
+radius : Float
+radius =
+    10.0
+
+
+hexPoints : Float -> Float -> String
 hexPoints xOffset yOffset =
     let
         hexPoint : Int -> String
         hexPoint i =
             let
-                radius =
-                    10.1
-
                 sides =
                     6
 
                 calcX i =
-                    toFloat xOffset + radius * cos (2 * pi * i / sides)
+                    xOffset + radius * cos (2.0 * pi * i / toFloat sides)
 
                 calcY i =
-                    toFloat yOffset + radius * sin (2 * pi * i / sides)
+                    yOffset + radius * sin (2.0 * pi * i / toFloat sides)
             in
             toString (calcX (toFloat i)) ++ "," ++ toString (calcY (toFloat i)) ++ " "
     in
     List.foldl (++) "" (List.map hexPoint (List.range 0 5))
 
 
-hexColor : Int -> Int -> String
+hexColor : Float -> Float -> String
 hexColor a b =
-    "#EE" ++ toString a ++ toString b
+    "#EEAACC"
 
 
 view : Model -> Html Msg
 view model =
+    svg [ viewBox "0 0 300 300", width "900px" ]
+        hexGrid
+
+
+hexGrid : List (Svg Msg)
+hexGrid =
     let
-        px : Int -> String
-        px num =
-            toString num ++ "px"
+        x =
+            20.0
+
+        y =
+            40.0
+
+        xDelta =
+            15.0
+
+        yDelta =
+            8.66
     in
-    svg [ viewBox "0 0 100 100", width "300px" ]
-        [ drawHex 20 40, drawHex 20 57, drawHex 35 49 ]
+    List.concat
+        [ drawColumn x y 4
+        , drawColumn (x + xDelta) (y - yDelta) 5
+        , drawColumn (x + 2 * xDelta) (y - 2 * yDelta) 6
+        , drawColumn (x + 3 * xDelta) (y - yDelta) 5
+        , drawColumn (x + 4 * xDelta) y 4
+        ]
 
 
-drawHex : Int -> Int -> Html Msg
+drawColumn : Float -> Float -> Int -> List (Svg Msg)
+drawColumn x y count =
+    let
+        yDelta i =
+            2 * 8.66 * i
+
+        addX a =
+            a + x
+
+        addY a =
+            a + y
+
+        xs =
+            Array.repeat count x
+                |> Array.toList
+
+        ys =
+            List.range 0 count
+                |> List.map toFloat
+                |> List.map yDelta
+                |> List.map addY
+    in
+    List.map2 drawHex xs ys
+
+
+drawHex : Float -> Float -> Html Msg
 drawHex offsetX offsetY =
     polygon [ points (hexPoints offsetX offsetY), Svg.Attributes.style ("fill:" ++ hexColor offsetX offsetY ++ ";stroke:black;stroke-width:1") ] []
 
