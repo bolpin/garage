@@ -46,40 +46,39 @@ initParkingSpots =
 
 
 type Msg
-    = Toggle Int
+    = NoOp
+    | Toggle Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Toggle id ->
-            ( toggle id model, Cmd.none )
+        NoOp ->
+            ( model, Cmd.none )
+
+        Toggle idx ->
+            ( toggleElementAt idx model, Cmd.none )
 
 
-toggle : Int -> List ParkingSpot -> Model
-toggle spotId list =
+toggleElementAt : Int -> Model -> Model
+toggleElementAt index model =
     let
-        toggleSpot : ParkingSpot -> ParkingSpot
-        toggleSpot spot =
-            case spot.state of
-                Booked ->
-                    { spot | state = Available }
+        toggle idx spot =
+            if idx == index then
+                case spot.state of
+                    Booked ->
+                        { spot | state = Available }
 
-                Available ->
-                    { spot | state = Booked }
+                    Available ->
+                        { spot | state = Booked }
+            else
+                spot
     in
-        case list of
-            [] ->
-                list
-
-            x :: xs ->
-                if x.id == spotId then
-                    toggleSpot x :: xs
-                else
-                    x :: toggle spotId xs
+    List.indexedMap toggle model
 
 
 
+--
 -- VIEW
 
 
@@ -116,20 +115,22 @@ view model =
         px num =
             toString num ++ "px"
 
-        renderParkingSpot : ParkingSpot -> Html Msg
-        renderParkingSpot spot =
+        renderParkingSpot : Int -> ParkingSpot -> Html Msg
+        renderParkingSpot idx spot =
             div
                 [ style (parkingSpotStyles spot.left spot.top spot.state)
-                , onClick (Toggle spot.id)
+                , onClick (Toggle idx)
                 ]
                 [ text (toString spot.id)
+                , text ","
+                , text (toString idx)
                 ]
     in
-        div []
-            (List.map
-                renderParkingSpot
-                model
-            )
+    div []
+        (List.indexedMap
+            renderParkingSpot
+            model
+        )
 
 
 subscriptions : Model -> Sub Msg

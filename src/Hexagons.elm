@@ -3,7 +3,8 @@ module Hexagons exposing (..)
 import Array exposing (repeat, toList)
 import Basics exposing (cos, pi, sin, sqrt)
 import Dict exposing (..)
-import Html exposing (Html, div, text)
+import Html exposing (Html, div, img, text)
+import Html.Attributes exposing (href)
 import Html.Events exposing (onClick)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
@@ -87,7 +88,7 @@ hexPoints xOffset yOffset =
 
 hexColor : Float -> Float -> String
 hexColor a b =
-    "#EEAACC"
+    "#AACCEE"
 
 
 view : Model -> Html Msg
@@ -118,6 +119,18 @@ hexGrid =
         , drawColumn (x + 3 * xDelta) (y - yDelta) 5
         , drawColumn (x + 4 * xDelta) y 4
         ]
+
+
+
+-- svgDefs : List (Svg Msg)
+-- svgDefs =
+--     [ defs
+--         [ id "tree-image" ]
+--         [ Svg.pattern []
+--             [ Html.img [ width "300", height "300", href "http://placekitten.com/306/306" ] []
+--             ]
+--         ]
+--     ]
 
 
 drawColumn : Float -> Float -> Int -> List (Svg Msg)
@@ -151,6 +164,7 @@ drawHex offsetX offsetY =
 
 
 
+-- polygon [ points (hexPoints offsetX offsetY), Svg.Attributes.style "fill:url('#tree-image');stroke:black;stroke-width:1" ] []
 -- polygon [ points (hexPoints offsetX offsetY), fill ( hexColor offsetX offsetY) ] []
 
 
