@@ -19,16 +19,50 @@ main =
         }
 
 
+type State
+    = Forest
+    | Hill
+    | Meadow
+    | Mountain
+    | Sea
+
+
+type alias Cell =
+    { x : Float
+    , y : Float
+    , state : State
+    }
+
+
 type alias Model =
-    { diagonalLength : Int
+    { cells : List Cell
     }
 
 
 initModel : ( Model, Cmd Msg )
 initModel =
-    ( { diagonalLength = 10 }
+    ( { cells = [] }
     , Cmd.none
     )
+
+
+cellColor : State -> String
+cellColor state =
+    case state of
+        Forest ->
+            "green"
+
+        Hill ->
+            "red"
+
+        Meadow ->
+            "yellow"
+
+        Mountain ->
+            "gray"
+
+        _ ->
+            "blue"
 
 
 
@@ -51,35 +85,42 @@ update msg model =
 
 
 
--- VIEW
--- hexGrid : List (Html Msg)
--- hexGrid =
---     let
---         longDiameter =
---             sqrt 3 * radius
---     in
---     [ drawHex 40.0 50.0 ]
+-- Hexagon Properties
 
 
-radius : Float
-radius =
+hexRadius : Float
+hexRadius =
     10.0
 
 
-hexPoints : Float -> Float -> String
-hexPoints xOffset yOffset =
+xDelta : Float
+xDelta =
+    1.5 * hexRadius
+
+
+yDelta : Float
+yDelta =
+    0.866 * hexRadius
+
+
+
+-- VIEW
+
+
+commaSeparatedhexPoints : Float -> Float -> String
+commaSeparatedhexPoints xOffset yOffset =
     let
         hexPoint : Int -> String
         hexPoint i =
             let
                 sides =
-                    6
+                    6.0
 
                 calcX i =
-                    xOffset + radius * cos (2.0 * pi * i / toFloat sides)
+                    xOffset + hexRadius * cos (2.0 * pi * i / sides)
 
                 calcY i =
-                    yOffset + radius * sin (2.0 * pi * i / toFloat sides)
+                    yOffset + hexRadius * sin (2.0 * pi * i / sides)
             in
             toString (calcX (toFloat i)) ++ "," ++ toString (calcY (toFloat i)) ++ " "
     in
@@ -100,51 +141,28 @@ view model =
 hexGrid : List (Svg Msg)
 hexGrid =
     let
-        x =
+        xOrigin =
             20.0
 
-        y =
+        yOrigin =
             40.0
-
-        xDelta =
-            15.0
-
-        yDelta =
-            8.66
     in
     List.concat
-        [ drawColumn x y 4
-        , drawColumn (x + xDelta) (y - yDelta) 5
-        , drawColumn (x + 2 * xDelta) (y - 2 * yDelta) 6
-        , drawColumn (x + 3 * xDelta) (y - yDelta) 5
-        , drawColumn (x + 4 * xDelta) y 4
+        [ drawColumn xOrigin yOrigin 4
+        , drawColumn (xOrigin + xDelta) (yOrigin - yDelta) 5
+        , drawColumn (xOrigin + 2 * xDelta) (yOrigin - 2 * yDelta) 6
+        , drawColumn (xOrigin + 3 * xDelta) (yOrigin - 3 * yDelta) 7
+        , drawColumn (xOrigin + 4 * xDelta) (yOrigin - 2 * yDelta) 6
+        , drawColumn (xOrigin + 5 * xDelta) (yOrigin - yDelta) 5
+        , drawColumn (xOrigin + 6 * xDelta) yOrigin 4
+        , [ circle [ cx (toString 0.0), cy (toString 0.0), r "3" ] []
+          ]
         ]
-
-
-
--- svgDefs : List (Svg Msg)
--- svgDefs =
---     [ defs
---         [ id "tree-image" ]
---         [ Svg.pattern []
---             [ Html.img [ width "300", height "300", href "http://placekitten.com/306/306" ] []
---             ]
---         ]
---     ]
 
 
 drawColumn : Float -> Float -> Int -> List (Svg Msg)
 drawColumn x y count =
     let
-        yDelta i =
-            2 * 8.66 * i
-
-        addX a =
-            a + x
-
-        addY a =
-            a + y
-
         xs =
             Array.repeat count x
                 |> Array.toList
@@ -152,20 +170,23 @@ drawColumn x y count =
         ys =
             List.range 0 count
                 |> List.map toFloat
-                |> List.map yDelta
-                |> List.map addY
+                |> List.map (\y -> 2 * yDelta * y)
+                |> List.map (\yOffset -> y + yOffset)
     in
     List.map2 drawHex xs ys
 
 
+
+-- draw a Hexagon centered at the point (x, y)
+
+
 drawHex : Float -> Float -> Html Msg
-drawHex offsetX offsetY =
-    polygon [ points (hexPoints offsetX offsetY), Svg.Attributes.style ("fill:" ++ hexColor offsetX offsetY ++ ";stroke:black;stroke-width:1") ] []
-
-
-
--- polygon [ points (hexPoints offsetX offsetY), Svg.Attributes.style "fill:url('#tree-image');stroke:black;stroke-width:1" ] []
--- polygon [ points (hexPoints offsetX offsetY), fill ( hexColor offsetX offsetY) ] []
+drawHex x y =
+    polygon
+        [ points (commaSeparatedhexPoints x y)
+        , Svg.Attributes.style ("fill:" ++ hexColor x y ++ ";stroke:black;stroke-width:1")
+        ]
+        []
 
 
 subscriptions : Model -> Sub Msg
