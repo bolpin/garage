@@ -155,8 +155,6 @@ hexGrid =
         , drawColumn (xOrigin + 4 * xDelta) (yOrigin - 2 * yDelta) 6
         , drawColumn (xOrigin + 5 * xDelta) (yOrigin - yDelta) 5
         , drawColumn (xOrigin + 6 * xDelta) yOrigin 4
-        , [ circle [ cx (toString 0.0), cy (toString 0.0), r "3" ] []
-          ]
         ]
 
 
