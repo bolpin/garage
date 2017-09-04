@@ -1,13 +1,15 @@
 module Hexagons exposing (..)
 
+-- import Html.Events exposing (onClick)
+
 import Array exposing (repeat, toList)
 import Basics exposing (cos, pi, sin, sqrt)
 import Dict exposing (..)
 import Html exposing (Html, div, img, text)
 import Html.Attributes exposing (href)
-import Html.Events exposing (onClick)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Svg.Events exposing (onClick)
 
 
 main =
@@ -27,6 +29,25 @@ type State
     | Sea
 
 
+nextState : State -> State
+nextState state =
+    case state of
+        Forest ->
+            Hill
+
+        Hill ->
+            Meadow
+
+        Meadow ->
+            Mountain
+
+        Mountain ->
+            Sea
+
+        Sea ->
+            Forest
+
+
 type alias Cell =
     { x : Float
     , y : Float
@@ -41,9 +62,56 @@ type alias Model =
 
 initModel : ( Model, Cmd Msg )
 initModel =
-    ( { cells = [] }
+    ( { cells = initCells }
     , Cmd.none
     )
+
+
+initCells : List Cell
+initCells =
+    let
+        xOrigin =
+            20.0
+
+        yOrigin =
+            40.0
+
+        xDelta =
+            1.5 * radius
+
+        yDelta =
+            0.866 * radius
+
+        initColumn : Float -> Float -> Int -> List Cell
+        initColumn x y count =
+            let
+                xs =
+                    Array.repeat count x
+                        |> Array.toList
+
+                ys =
+                    List.range 0 count
+                        |> List.map toFloat
+                        |> List.map (\y -> 2 * yDelta * y)
+                        |> List.map (\yOffset -> y + yOffset)
+            in
+            List.map2 createCell xs ys
+    in
+    List.concat
+        [ initColumn xOrigin yOrigin 3
+        , initColumn (xOrigin + xDelta) (yOrigin - yDelta) 4
+        , initColumn (xOrigin + 2 * xDelta) (yOrigin - 2 * yDelta) 5
+        , initColumn (xOrigin + 3 * xDelta) (yOrigin - yDelta) 4
+        , initColumn (xOrigin + 4 * xDelta) yOrigin 3
+        ]
+
+
+createCell : Float -> Float -> Cell
+createCell x y =
+    { x = x
+    , y = y
+    , state = Forest
+    }
 
 
 cellColor : State -> String
@@ -71,7 +139,7 @@ cellColor state =
 
 type Msg
     = NoOp
-    | HoverHex Int Int
+    | ChangeState Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -80,35 +148,37 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        HoverHex x y ->
-            ( model, Cmd.none )
+        ChangeState index ->
+            ( { model | cells = incrementStateAt index model.cells }, Cmd.none )
+
+
+incrementStateAt : Int -> List Cell -> List Cell
+incrementStateAt idx cells =
+    let
+        changeState i cell =
+            if i == idx then
+                { cell | state = nextState cell.state }
+            else
+                cell
+    in
+    List.indexedMap changeState cells
 
 
 
--- Hexagon Properties
+-- Hexagon Size Property
 
 
-hexRadius : Float
-hexRadius =
+radius : Float
+radius =
     10.0
-
-
-xDelta : Float
-xDelta =
-    1.5 * hexRadius
-
-
-yDelta : Float
-yDelta =
-    0.866 * hexRadius
 
 
 
 -- VIEW
 
 
-commaSeparatedhexPoints : Float -> Float -> String
-commaSeparatedhexPoints xOffset yOffset =
+commaSeparatedHexPoints : Cell -> String
+commaSeparatedHexPoints cell =
     let
         hexPoint : Int -> String
         hexPoint i =
@@ -117,74 +187,33 @@ commaSeparatedhexPoints xOffset yOffset =
                     6.0
 
                 calcX i =
-                    xOffset + hexRadius * cos (2.0 * pi * i / sides)
+                    cell.x + radius * cos (2.0 * pi * i / sides)
 
                 calcY i =
-                    yOffset + hexRadius * sin (2.0 * pi * i / sides)
+                    cell.y + radius * sin (2.0 * pi * i / sides)
             in
             toString (calcX (toFloat i)) ++ "," ++ toString (calcY (toFloat i)) ++ " "
     in
     List.foldl (++) "" (List.map hexPoint (List.range 0 5))
 
 
-hexColor : Float -> Float -> String
-hexColor a b =
-    "#AACCEE"
-
-
 view : Model -> Html Msg
 view model =
-    svg [ viewBox "0 0 300 300", width "900px" ]
-        hexGrid
+    svg [ viewBox "0 0 300 300", width "900px" ] (hexGrid model)
 
 
-hexGrid : List (Svg Msg)
-hexGrid =
+hexGrid : Model -> List (Svg Msg)
+hexGrid model =
     let
-        xOrigin =
-            20.0
-
-        yOrigin =
-            40.0
+        drawHex idx cell =
+            polygon
+                [ points (commaSeparatedHexPoints cell)
+                , Svg.Attributes.style ("fill:" ++ cellColor cell.state ++ ";stroke:black;stroke-width:1")
+                , onClick (ChangeState idx)
+                ]
+                []
     in
-    List.concat
-        [ drawColumn xOrigin yOrigin 4
-        , drawColumn (xOrigin + xDelta) (yOrigin - yDelta) 5
-        , drawColumn (xOrigin + 2 * xDelta) (yOrigin - 2 * yDelta) 6
-        , drawColumn (xOrigin + 3 * xDelta) (yOrigin - 3 * yDelta) 7
-        , drawColumn (xOrigin + 4 * xDelta) (yOrigin - 2 * yDelta) 6
-        , drawColumn (xOrigin + 5 * xDelta) (yOrigin - yDelta) 5
-        , drawColumn (xOrigin + 6 * xDelta) yOrigin 4
-        ]
-
-
-drawColumn : Float -> Float -> Int -> List (Svg Msg)
-drawColumn x y count =
-    let
-        xs =
-            Array.repeat count x
-                |> Array.toList
-
-        ys =
-            List.range 0 count
-                |> List.map toFloat
-                |> List.map (\y -> 2 * yDelta * y)
-                |> List.map (\yOffset -> y + yOffset)
-    in
-    List.map2 drawHex xs ys
-
-
-
--- draw a Hexagon centered at the point (x, y)
-
-
-drawHex : Float -> Float -> Html Msg
-drawHex x y =
-    polygon
-        [ points (commaSeparatedhexPoints x y)
-        , Svg.Attributes.style ("fill:" ++ hexColor x y ++ ";stroke:black;stroke-width:1")
-        ]
-        []
+    List.indexedMap drawHex model.cells
 
 
 subscriptions : Model -> Sub Msg
