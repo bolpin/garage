@@ -7,6 +7,8 @@ import Basics exposing (cos, pi, sin, sqrt)
 import Dict exposing (..)
 import Html exposing (Html, div, img, text)
 import Html.Attributes exposing (href)
+import Json.Decode as Decode
+import Mouse exposing (Position)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
@@ -21,7 +23,7 @@ main =
         }
 
 
-type State
+type Terrain
     = Forest
     | Hill
     | Meadow
@@ -29,9 +31,9 @@ type State
     | Sea
 
 
-nextState : State -> State
-nextState state =
-    case state of
+nextTerrain : Terrain -> Terrain
+nextTerrain terrain =
+    case terrain of
         Forest ->
             Hill
 
@@ -51,18 +53,30 @@ nextState state =
 type alias Cell =
     { x : Float
     , y : Float
-    , state : State
+    , terrain : Terrain
+    }
+
+
+type alias Drag =
+    { start : Position
+    , current : Position
+    , terrain : Terrain
     }
 
 
 type alias Model =
     { cells : List Cell
+    , draggable : Cell
+    , drag : Maybe Drag
     }
 
 
 initModel : ( Model, Cmd Msg )
 initModel =
-    ( { cells = initCells }
+    ( { cells = initCells
+      , draggable = initDraggable
+      , drag = Nothing
+      }
     , Cmd.none
     )
 
@@ -110,13 +124,13 @@ createCell : Float -> Float -> Cell
 createCell x y =
     { x = x
     , y = y
-    , state = Forest
+    , terrain = Meadow
     }
 
 
-cellColor : State -> String
-cellColor state =
-    case state of
+cellColor : Terrain -> String
+cellColor terrain =
+    case terrain of
         Forest ->
             "green"
 
@@ -139,7 +153,7 @@ cellColor state =
 
 type Msg
     = NoOp
-    | ChangeState Int
+    | ChangeTerrain Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -148,20 +162,20 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        ChangeState index ->
-            ( { model | cells = incrementStateAt index model.cells }, Cmd.none )
+        ChangeTerrain index ->
+            ( { model | cells = incrementTerrainAt index model.cells }, Cmd.none )
 
 
-incrementStateAt : Int -> List Cell -> List Cell
-incrementStateAt idx cells =
+incrementTerrainAt : Int -> List Cell -> List Cell
+incrementTerrainAt idx cells =
     let
-        changeState i cell =
+        changeTerrain i cell =
             if i == idx then
-                { cell | state = nextState cell.state }
+                { cell | terrain = nextTerrain cell.terrain }
             else
                 cell
     in
-    List.indexedMap changeState cells
+    List.indexedMap changeTerrain cells
 
 
 
@@ -199,7 +213,32 @@ commaSeparatedHexPoints cell =
 
 view : Model -> Html Msg
 view model =
-    svg [ viewBox "0 0 300 300", width "900px" ] (hexGrid model)
+    div []
+        [ svg [ viewBox "0 0 300 300", width "900px" ]
+            (List.concat [ hexGrid model, viewDraggable model ])
+        ]
+
+
+initDraggable : Cell
+initDraggable =
+    { x = 10, y = 9, terrain = Sea }
+
+
+viewDraggable : Model -> List (Svg Msg)
+viewDraggable model =
+    let
+        draggableCell =
+            model.draggable
+
+        draggableControl =
+            polygon
+                [ points (commaSeparatedHexPoints draggableCell)
+                , Svg.Attributes.style ("fill:" ++ cellColor draggableCell.terrain ++ ";stroke:black;stroke-width:1")
+                , onClick NoOp
+                ]
+                []
+    in
+    [ draggableControl ]
 
 
 hexGrid : Model -> List (Svg Msg)
@@ -208,8 +247,8 @@ hexGrid model =
         drawHex idx cell =
             polygon
                 [ points (commaSeparatedHexPoints cell)
-                , Svg.Attributes.style ("fill:" ++ cellColor cell.state ++ ";stroke:black;stroke-width:1")
-                , onClick (ChangeState idx)
+                , Svg.Attributes.style ("fill:" ++ cellColor cell.terrain ++ ";stroke:black;stroke-width:1")
+                , onClick (ChangeTerrain idx)
                 ]
                 []
     in
