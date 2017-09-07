@@ -1,6 +1,6 @@
 module Hexagons exposing (..)
 
--- import Html.Events exposing (onClick)
+-- import Html.Events exposing (on)
 
 import Array exposing (repeat, toList)
 import Basics exposing (cos, pi, sin, sqrt)
@@ -11,7 +11,8 @@ import Json.Decode as Decode
 import Mouse exposing (Position)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Svg.Events exposing (onClick)
+import Svg.Events exposing (onClick, onMouseDown)
+import VirtualDom exposing (on)
 
 
 main =
@@ -60,13 +61,13 @@ type alias Cell =
 type alias Drag =
     { start : Position
     , current : Position
-    , terrain : Terrain
     }
 
 
 type alias Model =
     { cells : List Cell
-    , draggable : Cell
+    , draggableTerrain : Terrain
+    , draggablePosition : Position
     , drag : Maybe Drag
     }
 
@@ -74,7 +75,8 @@ type alias Model =
 initModel : ( Model, Cmd Msg )
 initModel =
     ( { cells = initCells
-      , draggable = initDraggable
+      , draggableTerrain = Sea
+      , draggablePosition = Position 100 100
       , drag = Nothing
       }
     , Cmd.none
@@ -154,6 +156,9 @@ cellColor terrain =
 type Msg
     = NoOp
     | ChangeTerrain Int
+    | DragStart Position
+    | DragAt Position
+    | DragEnd Position
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -163,7 +168,33 @@ update msg model =
             ( model, Cmd.none )
 
         ChangeTerrain index ->
-            ( { model | cells = incrementTerrainAt index model.cells }, Cmd.none )
+            ( { model
+                | cells = incrementTerrainAt index model.cells
+              }
+            , Cmd.none
+            )
+
+        DragStart xy ->
+            ( { model
+                | drag = Just (Drag xy xy)
+              }
+            , Cmd.none
+            )
+
+        DragAt xy ->
+            ( { model
+                | drag = Maybe.map (\{ start } -> Drag start xy) model.drag
+              }
+            , Cmd.none
+            )
+
+        DragEnd _ ->
+            ( { model
+                | draggablePosition = getPosition model.draggablePosition model.drag
+                , drag = Nothing
+              }
+            , Cmd.none
+            )
 
 
 incrementTerrainAt : Int -> List Cell -> List Cell
@@ -219,26 +250,38 @@ view model =
         ]
 
 
-initDraggable : Cell
-initDraggable =
-    { x = 10, y = 9, terrain = Sea }
-
-
 viewDraggable : Model -> List (Svg Msg)
 viewDraggable model =
     let
-        draggableCell =
-            model.draggable
+        realPosition =
+            getPosition model.draggablePosition model.drag
 
-        draggableControl =
+        draggableCell =
+            { x = toFloat realPosition.x
+            , y = toFloat realPosition.y
+            , terrain = model.draggableTerrain
+            }
+
+        draggableSvg =
             polygon
                 [ points (commaSeparatedHexPoints draggableCell)
                 , Svg.Attributes.style ("fill:" ++ cellColor draggableCell.terrain ++ ";stroke:black;stroke-width:1")
-                , onClick NoOp
                 ]
                 []
     in
-    [ draggableControl ]
+    [ draggableSvg ]
+
+
+getPosition : Position -> Maybe Drag -> Position
+getPosition position drag =
+    case drag of
+        Nothing ->
+            position
+
+        Just { start, current } ->
+            Position
+                (position.x + current.x - start.x)
+                (position.y + current.y - start.y)
 
 
 hexGrid : Model -> List (Svg Msg)
@@ -255,6 +298,20 @@ hexGrid model =
     List.indexedMap drawHex model.cells
 
 
+
+-- SUBSCRIPTIONS
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    case model.drag of
+        Nothing ->
+            Sub.none
+
+        Just _ ->
+            Sub.batch [ Mouse.moves DragAt, Mouse.ups DragEnd ]
+
+
+onMouseDown : Attribute Msg
+onMouseDown =
+    on "mousedown" (Decode.map DragStart Mouse.position)
