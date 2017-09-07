@@ -1,16 +1,12 @@
 module Hexagons exposing (..)
 
--- import Html.Events exposing (on)
-
-import Array exposing (repeat, toList)
 import Basics exposing (cos, pi, sin, sqrt)
-import Dict exposing (..)
-import Html exposing (Html, div, img, text)
+import Html exposing (Html, div)
 import Html.Attributes exposing (href)
 import Json.Decode as Decode
 import Mouse exposing (Position)
-import Svg exposing (..)
-import Svg.Attributes exposing (..)
+import Svg exposing (Attribute, Svg, polygon, svg)
+import Svg.Attributes exposing (height, points, viewBox, width)
 import VirtualDom exposing (on)
 
 
@@ -68,7 +64,7 @@ cellColor terrain =
         Meadow ->
             "yellow"
 
-        _ ->
+        Sea ->
             "blue"
 
 
@@ -108,13 +104,13 @@ update msg model =
             )
 
 
+
+-- VIEW
+
+
 radius : Float
 radius =
     30.0
-
-
-
--- VIEW
 
 
 commaSeparatedHexPoints : Cell -> String
