@@ -1,4 +1,4 @@
-module Hexagons exposing (..)
+module Drag exposing (..)
 
 import Basics exposing (cos, pi, sin, sqrt)
 import Html exposing (Html, div)

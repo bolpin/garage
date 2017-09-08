@@ -1,3 +1,5 @@
-# Garage
+# Drawing shapes with Elm
 
-Drawing shapes with Elm
+```
+elm-live src/Drag.elm  --output=elm.js --open
+```
