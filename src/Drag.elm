@@ -5,8 +5,8 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (href)
 import Json.Decode as Decode
 import Mouse exposing (Position)
-import Svg exposing (Attribute, Svg, polygon, svg)
-import Svg.Attributes exposing (height, points, viewBox, width)
+import Svg exposing (Attribute, Svg, circle, polygon, svg)
+import Svg.Attributes exposing (cx, cy, height, points, r, viewBox, width)
 import VirtualDom exposing (on)
 
 
@@ -17,12 +17,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-type Terrain
-    = Forest
-    | Meadow
-    | Sea
 
 
 type alias Cell =
@@ -39,17 +33,26 @@ type alias Drag =
 
 
 type alias Model =
-    { draggableTerrain : Terrain
+    { targetTerrain : Terrain
+    , draggableTerrain : Terrain
     , draggablePosition : Position
     , drag : Maybe Drag
+    , dbg : String
     }
+
+
+startPosition : Position
+startPosition =
+    Position 100 100
 
 
 initModel : ( Model, Cmd Msg )
 initModel =
-    ( { draggableTerrain = Sea
-      , draggablePosition = Position 100 100
+    ( { targetTerrain = Meadow
+      , draggableTerrain = Sea
+      , draggablePosition = startPosition
       , drag = Nothing
+      , dbg = "Debug"
       }
     , Cmd.none
     )
@@ -61,10 +64,16 @@ cellColor terrain =
         Forest ->
             "green"
 
+        Hill ->
+            "red"
+
         Meadow ->
             "yellow"
 
-        Sea ->
+        Mountain ->
+            "gray"
+
+        _ ->
             "blue"
 
 
@@ -95,9 +104,47 @@ update msg model =
             , Cmd.none
             )
 
-        DragEnd _ ->
+        DragEnd xy ->
+            let
+                debugStr =
+                    toString targetX
+                        ++ " "
+                        ++ toString
+                            targetY
+                        ++ " "
+                        ++ toString
+                            xy.x
+                        ++ " "
+                        ++ toString
+                            xy.y
+
+                dist =
+                    (targetX - toFloat xy.x) ^ 2.0 + (targetY - toFloat xy.y) ^ 2.0
+
+                inTarget xy =
+                    targetRadius ^ 2.0 > dist
+
+                newTerrain =
+                    case inTarget xy of
+                        True ->
+                            model.draggableTerrain
+
+                        _ ->
+                            model.targetTerrain
+
+                newHexTerrain =
+                    case inTarget xy of
+                        True ->
+                            nextTerrain model.draggableTerrain
+
+                        _ ->
+                            model.draggableTerrain
+            in
             ( { model
-                | draggablePosition = getPosition model.draggablePosition model.drag
+                | draggablePosition = startPosition
+                , draggableTerrain = newHexTerrain
+                , targetTerrain = newTerrain
+                , dbg = debugStr
                 , drag = Nothing
               }
             , Cmd.none
@@ -108,9 +155,51 @@ update msg model =
 -- VIEW
 
 
+targetRadius : Float
+targetRadius =
+    85.0
+
+
+targetX : Float
+targetX =
+    200.0
+
+
+targetY : Float
+targetY =
+    200.0
+
+
 radius : Float
 radius =
-    30.0
+    10.0
+
+
+type Terrain
+    = Forest
+    | Hill
+    | Meadow
+    | Mountain
+    | Sea
+
+
+nextTerrain : Terrain -> Terrain
+nextTerrain terrain =
+    case terrain of
+        Forest ->
+            Hill
+
+        Hill ->
+            Meadow
+
+        Meadow ->
+            Mountain
+
+        Mountain ->
+            Sea
+
+        Sea ->
+            Forest
 
 
 commaSeparatedHexPoints : Cell -> String
@@ -136,9 +225,26 @@ commaSeparatedHexPoints cell =
 view : Model -> Html Msg
 view model =
     div []
-        [ svg [ viewBox "0 0 900 900", height "900px", width "900px" ]
-            (List.concat [ viewDraggable model ])
+        [ svg [ viewBox "0 0 300 300", height "300px", width "300px" ]
+            (List.concat [ viewTarget model, viewDraggable model ])
+        , Html.text "Drag the hexagon into the circle to change the circle's color."
         ]
+
+
+viewTarget : Model -> List (Svg Msg)
+viewTarget model =
+    let
+        targetSvg =
+            circle
+                [ cx (toString targetX)
+                , cy (toString targetY)
+                , r (toString targetRadius)
+                , Svg.Attributes.style ("fill:" ++ cellColor model.targetTerrain ++ ";stroke:black;stroke-width:1")
+                , onMouseDown
+                ]
+                []
+    in
+    [ targetSvg ]
 
 
 viewDraggable : Model -> List (Svg Msg)
