@@ -1,6 +1,7 @@
 module Drag exposing (..)
 
 import Basics exposing (cos, pi, sin, sqrt)
+import Dict exposing (Dict, get)
 import Html exposing (Html, div)
 import Html.Attributes exposing (href)
 import Json.Decode as Decode
@@ -26,36 +27,50 @@ type alias Cell =
     }
 
 
+type alias Target =
+    { x : Int
+    , y : Int
+    , r : Int
+    , terrain : Terrain
+    }
+
+
 type alias Drag =
     { start : Position
     , current : Position
+    , cellIndex : Int
     }
 
 
 type alias Model =
-    { targetTerrain : Terrain
-    , draggableTerrain : Terrain
-    , draggablePosition : Position
+    { cells : Dict Int Cell
+    , targetTerrain : Terrain
     , drag : Maybe Drag
-    , dbg : String
     }
-
-
-startPosition : Position
-startPosition =
-    Position 100 100
 
 
 initModel : ( Model, Cmd Msg )
 initModel =
-    ( { targetTerrain = Meadow
-      , draggableTerrain = Sea
-      , draggablePosition = startPosition
+    ( { cells = initCells
+      , targetTerrain = Placeholder
       , drag = Nothing
-      , dbg = "Debug"
       }
     , Cmd.none
     )
+
+
+initCells : Dict Int Cell
+initCells =
+    Dict.fromList
+        (List.indexedMap
+            (,)
+            [ { x = 30, y = 20, terrain = Forest }
+            , { x = 60, y = 20, terrain = Mountain }
+            , { x = 90, y = 20, terrain = Sea }
+            , { x = 120, y = 20, terrain = Hill }
+            , { x = 150, y = 20, terrain = Meadow }
+            ]
+        )
 
 
 cellColor : Terrain -> String
@@ -73,12 +88,46 @@ cellColor terrain =
         Mountain ->
             "gray"
 
-        _ ->
+        Sea ->
             "blue"
 
+        _ ->
+            "black"
 
 
--- UPDATE
+closestCellKey : Position -> Dict Int Cell -> Int
+closestCellKey dragPosition cells =
+    let
+        fakeCell =
+            { x = toFloat dragPosition.x, y = toFloat dragPosition.y, terrain = Placeholder }
+
+        distance cell1 cell2 =
+            sqrt ((cell2.x - cell1.x) ^ 2.0 + (cell2.y - cell1.y) ^ 2.0)
+
+        distances =
+            List.map (distance fakeCell) (Dict.values cells)
+    in
+    minIndex distances
+
+
+minIndex : List Float -> Int
+minIndex xs =
+    let
+        aux ( i, x ) ( i2, x2 ) =
+            case x2 of
+                Nothing ->
+                    ( i, Just x )
+
+                Just x2_ ->
+                    if x > x2_ then
+                        ( i2, x2 )
+                    else
+                        ( i, Just x )
+    in
+    xs
+        |> List.indexedMap (,)
+        |> List.foldl aux ( -1, Nothing )
+        |> Tuple.first
 
 
 type Msg
@@ -92,14 +141,14 @@ update msg model =
     case msg of
         DragStart xy ->
             ( { model
-                | drag = Just (Drag xy xy)
+                | drag = Just (Drag xy xy (closestCellKey xy model.cells))
               }
             , Cmd.none
             )
 
         DragAt xy ->
             ( { model
-                | drag = Maybe.map (\{ start } -> Drag start xy) model.drag
+                | drag = Maybe.map (\{ start, current, cellIndex } -> Drag start xy cellIndex) model.drag
               }
             , Cmd.none
             )
@@ -127,24 +176,23 @@ update msg model =
                 newTerrain =
                     case inTarget xy of
                         True ->
-                            model.draggableTerrain
+                            case model.drag of
+                                Nothing ->
+                                    model.targetTerrain
+
+                                Just drag ->
+                                    case Dict.get drag.cellIndex model.cells of
+                                        Nothing ->
+                                            model.targetTerrain
+
+                                        Just cell ->
+                                            cell.terrain
 
                         _ ->
                             model.targetTerrain
-
-                newHexTerrain =
-                    case inTarget xy of
-                        True ->
-                            nextTerrain model.draggableTerrain
-
-                        _ ->
-                            model.draggableTerrain
             in
             ( { model
-                | draggablePosition = startPosition
-                , draggableTerrain = newHexTerrain
-                , targetTerrain = newTerrain
-                , dbg = debugStr
+                | targetTerrain = newTerrain
                 , drag = Nothing
               }
             , Cmd.none
@@ -172,7 +220,7 @@ targetY =
 
 radius : Float
 radius =
-    10.0
+    15.0
 
 
 type Terrain
@@ -181,25 +229,7 @@ type Terrain
     | Meadow
     | Mountain
     | Sea
-
-
-nextTerrain : Terrain -> Terrain
-nextTerrain terrain =
-    case terrain of
-        Forest ->
-            Hill
-
-        Hill ->
-            Meadow
-
-        Meadow ->
-            Mountain
-
-        Mountain ->
-            Sea
-
-        Sea ->
-            Forest
+    | Placeholder
 
 
 commaSeparatedHexPoints : Cell -> String
@@ -222,11 +252,15 @@ commaSeparatedHexPoints cell =
     List.foldl (++) "" (List.map hexPoint (List.range 0 5))
 
 
+
+-- VIEW
+
+
 view : Model -> Html Msg
 view model =
     div []
         [ svg [ viewBox "0 0 300 300", height "300px", width "300px" ]
-            (List.concat [ viewTarget model, viewDraggable model ])
+            (List.concat [ viewTarget model, viewCells model ])
         , Html.text "Drag the hexagon into the circle to change the circle's color."
         ]
 
@@ -240,46 +274,74 @@ viewTarget model =
                 , cy (toString targetY)
                 , r (toString targetRadius)
                 , Svg.Attributes.style ("fill:" ++ cellColor model.targetTerrain ++ ";stroke:black;stroke-width:1")
-                , onMouseDown
                 ]
                 []
     in
     [ targetSvg ]
 
 
-viewDraggable : Model -> List (Svg Msg)
-viewDraggable model =
+viewCells : Model -> List (Svg Msg)
+viewCells model =
+    case model.drag of
+        Nothing ->
+            List.map viewCell (Dict.values model.cells)
+
+        Just d ->
+            case Dict.get d.cellIndex model.cells of
+                Nothing ->
+                    []
+
+                Just c ->
+                    [ viewDraggedCell c model.drag ]
+
+
+viewCell : Cell -> Svg Msg
+viewCell cell =
+    polygon
+        [ points (commaSeparatedHexPoints cell)
+        , Svg.Attributes.style ("fill:" ++ cellColor cell.terrain ++ ";stroke:black;stroke-width:1")
+        , onMouseDown
+        ]
+        []
+
+
+viewDraggedCell : Cell -> Maybe Drag -> Svg Msg
+viewDraggedCell cell drag =
     let
         realPosition =
-            getPosition model.draggablePosition model.drag
+            getPosition cell.x cell.y drag
 
-        draggableCell =
+        draggedCell =
             { x = toFloat realPosition.x
             , y = toFloat realPosition.y
-            , terrain = model.draggableTerrain
+            , terrain = cell.terrain
             }
 
-        draggableSvg =
+        draggedSvg =
             polygon
-                [ points (commaSeparatedHexPoints draggableCell)
-                , Svg.Attributes.style ("fill:" ++ cellColor draggableCell.terrain ++ ";stroke:black;stroke-width:1")
+                [ points (commaSeparatedHexPoints draggedCell)
+                , Svg.Attributes.style ("fill:" ++ cellColor draggedCell.terrain ++ ";stroke:black;stroke-width:1")
                 , onMouseDown
                 ]
                 []
     in
-    [ draggableSvg ]
+    draggedSvg
 
 
-getPosition : Position -> Maybe Drag -> Position
-getPosition position drag =
+getPosition : Float -> Float -> Maybe Drag -> Position
+getPosition x y drag =
+    let
+        xy =
+            { x = round x, y = round y }
+    in
     case drag of
         Nothing ->
-            position
+            xy
 
         Just { start, current } ->
             Position
-                (position.x + current.x - start.x)
-                (position.y + current.y - start.y)
+                (xy.x + current.x - start.x)
+                (xy.y + current.y - start.y)
 
 
 
